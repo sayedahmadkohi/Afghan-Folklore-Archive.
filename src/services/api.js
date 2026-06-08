@@ -1,0 +1,68 @@
+import axios from "axios";
+
+const API_BASE = "/api";
+
+const api = axios.create({
+  baseURL: API_BASE,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Request interceptor - attach token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("afa_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor - handle 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem("afa_token");
+      localStorage.removeItem("afa_user");
+      localStorage.removeItem("afa_isAuthenticated");
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Auth API
+export const authAPI = {
+  register: (fullName, email, password) =>
+    api.post("/auth/register", { fullName, email, password }),
+  login: (email, password) => api.post("/auth/login", { email, password }),
+  getMe: () => api.get("/auth/me"),
+  acceptRules: () => api.put("/auth/accept-rules"),
+};
+
+// Stories API
+export const storiesAPI = {
+  getAll: () => api.get("/stories"),
+  getMy: () => api.get("/stories/my"),
+  getOne: (id) => api.get(`/stories/${id}`),
+  create: (formData) =>
+    api.post("/stories", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  update: (id, formData) =>
+    api.put(`/stories/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  delete: (id) => api.delete(`/stories/${id}`),
+  toggleLike: (id) => api.post(`/stories/${id}/like`),
+  incrementView: (id) => api.post(`/stories/${id}/view`),
+};
+
+export default api;
