@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
-import mongoose from "mongoose";
-import Story from "./models/Story.js";
 import connectDB from "./config/db.js";
+import Story from "./models/Story.js";
+import User from "./models/User.js";
 
 dotenv.config();
 
@@ -9,7 +9,15 @@ const migrate = async () => {
   try {
     await connectDB();
 
-    // Update all stories that don't have a language field or have it set to null/empty
+    const userResult = await User.updateMany(
+      { isEmailVerified: { $exists: false } },
+      { $set: { isEmailVerified: true } },
+    );
+
+    console.log(
+      `Auth migration complete: ${userResult.modifiedCount} users marked as email verified`,
+    );
+
     const result = await Story.updateMany(
       {
         $or: [
