@@ -1,8 +1,12 @@
-/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */ //  به وی اس میگوید که این فایل تنظمیات تلویند است.
 export default {
+  // کجا دنبال تنطمیات بگردد
+  // اگر داخل [] خالی باشد هیچ تولید سی اس اس نمیشود
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  // روش کلاس سازی دارک مود
   darkMode: "class",
   theme: {
+    // این یعنی تنظمات قبلی را حذف نکن جدید هارا اضافه کن
     extend: {
       colors: {
         background: "var(--color-background)",

@@ -20,9 +20,9 @@
   --color-border: rgba(255, 255, 255, 0.08);
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@tailwind base; /* برای ریست کردن استایل های پیش فرض مرورگر*/
+@tailwind components; /*کلاس های آماده کامپونیت */
+@tailwind utilities; /* کلاس های کاربردی مثل فاصه سایز و.. */
 
 @layer base {
   * {
@@ -40,10 +40,12 @@
 
 @layer utilities {
   .glass {
+    /* افکت شیشه ای */
     @apply bg-card-background backdrop-blur-xl border border-border;
   }
 
   .text-gradient {
+    /* متن شیب دار*/
     @apply bg-gradient-to-r from-primary-accent to-secondary-accent bg-clip-text text-transparent;
   }
 

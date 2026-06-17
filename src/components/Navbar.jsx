@@ -11,10 +11,11 @@ import {
   LogOut,
   LogIn,
   UserPlus,
-} from "lucide-react";
+} from "lucide-react"; // آیکن های بالا را از اینجا وارد کردیم
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 
+// بخش دوم تعریف کامپونیت ها
 const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
   const { isAuthenticated, logout } = useAuth();
@@ -23,6 +24,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // بخش سوم: بخش افکت اسکرول
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -30,20 +32,21 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
+  // بخش چهارم: تابع خروج
   const handleLogout = () => {
     logout();
     setIsMobileMenuOpen(false);
     navigate("/");
   };
 
+  // بخش پنجم : لینک تاوبری داینامیک
   const navLinks = [
     { name: "Explore Stories", path: "/explore", icon: BookOpen },
     ...(isAuthenticated
       ? [{ name: "Add Story", path: "/add-story", icon: Plus }]
       : []),
   ];
-
+  // بخش ششم نوار ناوبری اصلی
   return (
     <motion.nav
       initial={{ y: -100 }}

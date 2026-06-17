@@ -1,3 +1,4 @@
+// این لایه اصلی برنامه هست. که ساحتار کلی صحفه را نمایش میدهد
 import { Routes, Route } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
@@ -11,18 +12,22 @@ import Register from "../pages/Register";
 import ForgotPassword from "../pages/ForgotPassword";
 import AddStory from "../pages/AddStory";
 
+// تنظمیات انمیشن
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
   enter: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -20 },
 };
 
+//
 const pageTransition = {
-  type: "tween",
-  ease: "anticipate",
+  type: "tween", // انمیشن خطی
+  ease: "anticipate", // افکت نرم با کمی عقب کشیدن
   duration: 0.5,
 };
 
+//بخش کامپونیت ها
+// هر صفحه باید داخل این کامپونیت قرار گیرد تا انیمشن داشته باشد.
 const AnimatedPage = ({ children }) => (
   <motion.div
     initial="initial"
@@ -35,12 +40,14 @@ const AnimatedPage = ({ children }) => (
   </motion.div>
 );
 
+// کامپونیت اصلی  کل صفحه با ارتفاع کامل و رنگ پس زمینه
 const AppLayout = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
       <main className="pt-16 md:pt-20">
+        {" "}
         <AnimatePresence mode="wait">
           <Routes>
             <Route

@@ -1,16 +1,19 @@
-import { Link } from "react-router-dom";
-import { BookOpen, Mail, Github, Twitter } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom"; // برای ناوبری بین صفحات بدون ریفریش
+import { BookOpen, Mail, Github, Twitter } from "lucide-react"; // آیکن های کتاب
+import { useAuth } from "../context/AuthContext"; // هوک سفارسی برای احزار هویت
 
+// تعریف کامپونیت
 const Footer = () => {
   const { isAuthenticated } = useAuth();
 
+  // لینک داینامیک های فوتر
   const footerLinks = [
     { name: "Explore Stories", path: "/explore" },
     { name: "Add Story", path: isAuthenticated ? "/add-story" : "/login" },
     { name: "About", path: "/" },
   ];
 
+  // ساختار اصلی فوتر
   return (
     <footer className="bg-background-secondary border-t border-border mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -90,7 +93,7 @@ const Footer = () => {
         {/* Copyright */}
         <div className="border-t border-border mt-12 pt-8 text-center">
           <p className="text-text-secondary text-sm">
-            &copy; 2024 Afghan Folklore Archive. All rights reserved. Preserving
+            &copy; 2026 Afghan Folklore Archive. All rights reserved. Preserving
             culture, one story at a time.
           </p>
         </div>

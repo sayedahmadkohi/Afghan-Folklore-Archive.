@@ -1,8 +1,9 @@
+// هر یک از موارد که امپورت شده هدف خاصی دارد.
 import { createContext, useContext, useState, useEffect } from "react";
 import { authAPI } from "../services/api";
 
 const AuthContext = createContext(null);
-
+// هوک سفارشی اگر درجایی درستی استفاده نشود خطا میدهد.
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -10,7 +11,7 @@ export const useAuth = () => {
   }
   return context;
 };
-
+//
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try {
@@ -41,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem(
       "afa_isAuthenticated",
-      JSON.stringify(isAuthenticated)
+      JSON.stringify(isAuthenticated),
     );
   }, [isAuthenticated]);
 

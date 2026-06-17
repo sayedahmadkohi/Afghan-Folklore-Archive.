@@ -1,3 +1,8 @@
+// سرویس یک لایه واسط بین ری اکت و سرور هست  که وظایف آن عبارتند از
+//ارسال درحواست به بکند
+// مدریت های توکن ها و احزار هویت
+// هندل کردن خطاها به صورت متمرکز
+// آماده کردن داده ها برای ارسال ودریافت
 import axios from "axios";
 
 const API_BASE = "/api";
@@ -18,7 +23,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Response interceptor - handle 401
@@ -35,7 +40,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Auth API
