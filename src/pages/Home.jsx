@@ -23,7 +23,7 @@ const Home = () => {
     const fetchStories = async () => {
       try {
         const res = await storiesAPI.getAll();
-        setStories(res.data);
+        setStories(res.data.stories);
       } catch (err) {
         console.error("Failed to fetch stories", err);
       } finally {

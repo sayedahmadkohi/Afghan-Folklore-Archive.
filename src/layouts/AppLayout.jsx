@@ -10,6 +10,8 @@ import StoryDetails from "../pages/StoryDetails";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ForgotPassword from "../pages/ForgotPassword";
+import VerifyEmail from "../pages/VerifyEmail";
+import ResetPassword from "../pages/ResetPassword";
 import AddStory from "../pages/AddStory";
 
 // تنظمیات انمیشن
@@ -95,6 +97,22 @@ const AppLayout = () => {
               element={
                 <AnimatedPage>
                   <ForgotPassword />
+                </AnimatedPage>
+              }
+            />
+            <Route
+              path="/verify-email"
+              element={
+                <AnimatedPage>
+                  <VerifyEmail />
+                </AnimatedPage>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <AnimatedPage>
+                  <ResetPassword />
                 </AnimatedPage>
               }
             />

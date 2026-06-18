@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { authAPI } from "../services/api";
 
 const AuthContext = createContext(null);
-// هوک سفارشی اگر درجایی درستی استفاده نشود خطا میدهد.
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -11,7 +11,21 @@ export const useAuth = () => {
   }
   return context;
 };
-//
+
+const mapUser = (userData) => ({
+  id: userData.id || userData._id,
+  name: userData.fullName,
+  email: userData.email,
+  acceptedRules: userData.acceptedRules,
+  isEmailVerified: userData.isEmailVerified,
+});
+
+const setSession = (token, userData, setUser, setIsAuthenticated) => {
+  localStorage.setItem("afa_token", token);
+  setUser(mapUser(userData));
+  setIsAuthenticated(true);
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try {
@@ -30,7 +44,6 @@ export const AuthProvider = ({ children }) => {
   });
   const [loading, setLoading] = useState(true);
 
-  // Persist state to localStorage
   useEffect(() => {
     if (user) {
       localStorage.setItem("afa_user", JSON.stringify(user));
@@ -46,24 +59,16 @@ export const AuthProvider = ({ children }) => {
     );
   }, [isAuthenticated]);
 
-  // Restore session from token on mount
   useEffect(() => {
     const token = localStorage.getItem("afa_token");
     if (token && isAuthenticated) {
       authAPI
         .getMe()
         .then((res) => {
-          const userData = res.data;
-          setUser({
-            id: userData.id || userData._id,
-            name: userData.fullName,
-            email: userData.email,
-            acceptedRules: userData.acceptedRules,
-          });
+          setUser(mapUser(res.data));
           setIsAuthenticated(true);
         })
         .catch(() => {
-          // Token invalid
           localStorage.removeItem("afa_token");
           localStorage.removeItem("afa_user");
           localStorage.removeItem("afa_isAuthenticated");
@@ -80,39 +85,59 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await authAPI.login(email, password);
       const { token, user: userData } = res.data;
-      localStorage.setItem("afa_token", token);
-      setUser({
-        id: userData.id || userData._id,
-        name: userData.fullName,
-        email: userData.email,
-        acceptedRules: userData.acceptedRules,
-      });
-      setIsAuthenticated(true);
+      setSession(token, userData, setUser, setIsAuthenticated);
       return { success: true };
     } catch (error) {
-      const message =
-        error.response?.data?.message || "Login failed. Please try again.";
-      return { success: false, message };
+      const data = error.response?.data;
+      const message = data?.message || "Login failed. Please try again.";
+      return {
+        success: false,
+        message,
+        requiresVerification: data?.requiresVerification === true,
+        email: data?.email,
+      };
     }
   };
 
   const register = async (name, email, password) => {
     try {
       const res = await authAPI.register(name, email, password);
-      const { token, user: userData } = res.data;
-      localStorage.setItem("afa_token", token);
-      setUser({
-        id: userData.id || userData._id,
-        name: userData.fullName,
-        email: userData.email,
-        acceptedRules: userData.acceptedRules,
-      });
-      setIsAuthenticated(true);
-      return { success: true };
+      return {
+        success: true,
+        requiresVerification: res.data.requiresVerification === true,
+        email: res.data.email,
+        message: res.data.message,
+      };
     } catch (error) {
       const message =
         error.response?.data?.message ||
         "Registration failed. Please try again.";
+      return { success: false, message };
+    }
+  };
+
+  const verifyEmail = async (email, code) => {
+    try {
+      const res = await authAPI.verifyEmail(email, code);
+      const { token, user: userData } = res.data;
+      setSession(token, userData, setUser, setIsAuthenticated);
+      return { success: true, message: res.data.message };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Verification failed. Please try again.";
+      return { success: false, message };
+    }
+  };
+
+  const resendVerification = async (email) => {
+    try {
+      const res = await authAPI.resendVerification(email);
+      return { success: true, message: res.data.message };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Failed to resend verification code. Please try again.";
       return { success: false, message };
     }
   };
@@ -136,6 +161,8 @@ export const AuthProvider = ({ children }) => {
         user,
         login,
         register,
+        verifyEmail,
+        resendVerification,
         logout,
         loading,
         updateUser,

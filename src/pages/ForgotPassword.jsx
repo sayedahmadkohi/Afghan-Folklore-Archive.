@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen,
@@ -10,8 +10,10 @@ import {
 } from "lucide-react";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import { authAPI } from "../services/api";
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -35,9 +37,17 @@ const ForgotPassword = () => {
     }
 
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    setIsLoading(false);
-    setIsSuccess(true);
+    try {
+      await authAPI.forgotPassword(email.trim());
+      setIsSuccess(true);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Failed to send reset code. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -70,7 +80,7 @@ const ForgotPassword = () => {
             Reset Password
           </h1>
           <p className="text-text-secondary">
-            We'll send you a link to reset your password
+            We'll send you a code to reset your password
           </p>
         </div>
 
@@ -111,13 +121,24 @@ const ForgotPassword = () => {
                   <span className="text-primary-accent font-medium">
                     {email}
                   </span>
-                  , you will receive a password reset link shortly.
+                  , you will receive a password reset code shortly.
                 </p>
-                <Link to="/login">
-                  <Button variant="primary" className="mt-4">
+                <Button
+                  variant="primary"
+                  className="mt-4"
+                  onClick={() =>
+                    navigate(
+                      `/reset-password?email=${encodeURIComponent(email.trim())}`,
+                    )
+                  }
+                >
+                  Enter Reset Code
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                <Link to="/login" className="block mt-3">
+                  <span className="text-sm text-primary-accent hover:underline">
                     Back to Sign In
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
+                  </span>
                 </Link>
               </motion.div>
             ) : (
@@ -133,7 +154,7 @@ const ForgotPassword = () => {
                     Forgot Password?
                   </h2>
                   <p className="text-text-secondary text-sm">
-                    Enter your email address and we'll send you a link to reset
+                    Enter your email address and we'll send you a code to reset
                     your password.
                   </p>
                 </div>
@@ -169,7 +190,7 @@ const ForgotPassword = () => {
                     className="w-full"
                     isLoading={isLoading}
                   >
-                    Send Reset Link
+                    Send Reset Code
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </form>

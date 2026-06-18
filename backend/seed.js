@@ -46,6 +46,7 @@ const seedData = async () => {
         email: "seed@afghanfolklore.com",
         password: "password123",
         acceptedRules: true,
+        isEmailVerified: true,
       });
       console.log("Created seed author user");
     }

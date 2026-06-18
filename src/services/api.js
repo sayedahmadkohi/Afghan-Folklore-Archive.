@@ -47,14 +47,21 @@ api.interceptors.response.use(
 export const authAPI = {
   register: (fullName, email, password) =>
     api.post("/auth/register", { fullName, email, password }),
+  verifyEmail: (email, code) =>
+    api.post("/auth/verify-email", { email, code }),
+  resendVerification: (email) =>
+    api.post("/auth/resend-verification", { email }),
   login: (email, password) => api.post("/auth/login", { email, password }),
+  forgotPassword: (email) => api.post("/auth/forgot-password", { email }),
+  resetPassword: (email, code, newPassword) =>
+    api.post("/auth/reset-password", { email, code, newPassword }),
   getMe: () => api.get("/auth/me"),
   acceptRules: () => api.put("/auth/accept-rules"),
 };
 
 // Stories API
 export const storiesAPI = {
-  getAll: () => api.get("/stories"),
+  getAll: (page = 1, limit = 9) => api.get("/stories", { params: { page, limit } }),
   getMy: () => api.get("/stories/my"),
   getOne: (id) => api.get(`/stories/${id}`),
   create: (formData) =>

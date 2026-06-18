@@ -5,6 +5,7 @@ import StoryCard from "../components/StoryCard";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import FilterChips from "../components/FilterChips";
+import Pagination from "../components/Pagination";
 import { storiesAPI } from "../services/api";
 
 const Explore = () => {
@@ -14,6 +15,9 @@ const Explore = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   const categories = [
     "All",
@@ -37,8 +41,11 @@ const Explore = () => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const res = await storiesAPI.getAll();
-        setStories(res.data);
+        setLoading(true);
+        const res = await storiesAPI.getAll(currentPage, 9);
+        setStories(res.data.stories);
+        setTotalPages(res.data.totalPages);
+        setTotalItems(res.data.totalItems);
       } catch (err) {
         console.error("Failed to fetch stories", err);
       } finally {
@@ -46,7 +53,7 @@ const Explore = () => {
       }
     };
     fetchStories();
-  }, []);
+  }, [currentPage]);
 
   // Unicode-safe text normalization for multilingual search
   const normalizeText = (text) => {
@@ -98,6 +105,11 @@ const Explore = () => {
       return matchesSearch && catMatch && regMatch;
     });
   }, [stories, searchQuery, selectedCategory, selectedRegion]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Transform API story data for StoryCard compatibility
   const mapStoryForCard = (story) => ({
@@ -172,8 +184,7 @@ const Explore = () => {
 
           <div className="flex items-center justify-between">
             <p className="text-text-secondary">
-              {filteredStories.length}{" "}
-              {filteredStories.length === 1 ? "story" : "stories"} found
+              {totalItems} {totalItems === 1 ? "story" : "stories"} total
             </p>
             <div className="flex gap-2">
               <button
@@ -240,6 +251,7 @@ const Explore = () => {
                   setSearchQuery("");
                   setSelectedCategory("All");
                   setSelectedRegion("All");
+                  setCurrentPage(1);
                 }}
                 variant="secondary"
               >
@@ -248,6 +260,20 @@ const Explore = () => {
             </div>
           )}
         </motion.div>
+
+        {totalPages > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </motion.div>
+        )}
       </div>
     </div>
   );

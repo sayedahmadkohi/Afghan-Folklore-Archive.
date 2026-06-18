@@ -57,7 +57,7 @@ const Register = () => {
     setIsLoading(false);
 
     if (result.success) {
-      navigate("/add-story");
+      navigate(`/verify-email?email=${encodeURIComponent(email.trim())}`);
     } else {
       setError(result.message);
     }

@@ -46,6 +46,8 @@ const Login = () => {
 
     if (result.success) {
       navigate("/add-story");
+    } else if (result.requiresVerification && result.email) {
+      navigate(`/verify-email?email=${encodeURIComponent(result.email)}`);
     } else {
       setError(result.message);
     }

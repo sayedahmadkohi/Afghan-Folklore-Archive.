@@ -4,10 +4,25 @@ import jwt from "jsonwebtoken";
 // GET /api/stories
 export const getStories = async (req, res, next) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 9;
+    const skip = (page - 1) * limit;
+
+    const totalItems = await StoryModel.countDocuments();
     const stories = await StoryModel.find()
       .populate("author", "fullName email")
-      .sort({ createdAt: -1 });
-    res.json(stories);
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    res.json({
+      stories,
+      currentPage: page,
+      totalPages,
+      totalItems,
+    });
   } catch (error) {
     next(error);
   }
