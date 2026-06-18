@@ -109,16 +109,8 @@ const Home = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto"
+            className="flex items-center justify-center max-w-2xl mx-auto"
           >
-            <div className="relative w-full sm:flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
-              <input
-                type="text"
-                placeholder="Search stories, regions, or categories..."
-                className="w-full bg-card-background border border-border rounded-full py-4 pl-12 pr-4 text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary-accent transition-all"
-              />
-            </div>
             <Link to="/explore" className="w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-full">
                 Explore Stories

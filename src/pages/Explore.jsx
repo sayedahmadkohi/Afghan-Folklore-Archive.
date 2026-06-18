@@ -13,7 +13,7 @@ const Explore = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedRegion, setSelectedRegion] = useState("All");
+  const [selectedLanguage, setSelectedLanguage] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -28,21 +28,26 @@ const Explore = () => {
     "Epic Stories",
     "Mythology",
   ];
-  const regions = [
+  const languages = [
     "All",
-    "Kabul",
-    "Herat",
-    "Balkh",
-    "Bamyan",
-    "Kandahar",
-    "Badakhshan",
+    "Dari",
+    "Pashto",
+    "Uzbek",
+    "Arabic",
+    "English",
   ];
 
   useEffect(() => {
     const fetchStories = async () => {
       try {
         setLoading(true);
-        const res = await storiesAPI.getAll(currentPage, 9);
+        const res = await storiesAPI.getAll(
+          currentPage,
+          9,
+          searchQuery,
+          selectedCategory,
+          selectedLanguage
+        );
         setStories(res.data.stories);
         setTotalPages(res.data.totalPages);
         setTotalItems(res.data.totalItems);
@@ -53,62 +58,26 @@ const Explore = () => {
       }
     };
     fetchStories();
-  }, [currentPage]);
-
-  // Unicode-safe text normalization for multilingual search
-  const normalizeText = (text) => {
-    if (!text) return "";
-    return text
-      .toString()
-      .normalize("NFC") // Normalize Unicode composed forms
-      .toLowerCase()
-      .replace(/[\u200c\u200d\u200b]/g, "") // Remove zero-width characters (common in Persian/Pashto)
-      .replace(/[\u0640]/g, "") // Remove Arabic tatweel (kashida)
-      .replace(/\s+/g, " ") // Normalize whitespace
-      .trim();
-  };
-
-  const filteredStories = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return stories.filter((story) => {
-        const catMatch =
-          selectedCategory === "All" || story.category === selectedCategory;
-        const regMatch =
-          selectedRegion === "All" || story.region === selectedRegion;
-        return catMatch && regMatch;
-      });
-    }
-
-    const normalizedQuery = normalizeText(searchQuery);
-
-    return stories.filter((story) => {
-      // Search across all relevant fields
-      const searchableFields = [
-        story.title,
-        story.content,
-        story.description,
-        story.tags,
-        story.region,
-        story.category,
-        story.language,
-      ];
-
-      const matchesSearch = searchableFields.some((field) => {
-        const normalizedField = normalizeText(field);
-        return normalizedField.includes(normalizedQuery);
-      });
-
-      const catMatch =
-        selectedCategory === "All" || story.category === selectedCategory;
-      const regMatch =
-        selectedRegion === "All" || story.region === selectedRegion;
-      return matchesSearch && catMatch && regMatch;
-    });
-  }, [stories, searchQuery, selectedCategory, selectedRegion]);
+  }, [currentPage, searchQuery, selectedCategory, selectedLanguage]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+  };
+
+  const handleLanguageChange = (language) => {
+    setSelectedLanguage(language);
+    setCurrentPage(1);
   };
 
   // Transform API story data for StoryCard compatibility
@@ -163,7 +132,7 @@ const Explore = () => {
               icon={Search}
               placeholder="Search stories by title, description, or keywords..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
           </div>
 
@@ -171,14 +140,14 @@ const Explore = () => {
             <FilterChips
               options={categories}
               selected={selectedCategory}
-              onSelect={setSelectedCategory}
+              onSelect={handleCategoryChange}
               label="Category"
             />
             <FilterChips
-              options={regions}
-              selected={selectedRegion}
-              onSelect={setSelectedRegion}
-              label="Region"
+              options={languages}
+              selected={selectedLanguage}
+              onSelect={handleLanguageChange}
+              label="Language"
             />
           </div>
 
@@ -217,7 +186,7 @@ const Explore = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          {filteredStories.length > 0 ? (
+          {stories.length > 0 ? (
             <div
               className={`grid gap-6 ${
                 viewMode === "grid"
@@ -225,7 +194,7 @@ const Explore = () => {
                   : "grid-cols-1"
               }`}
             >
-              {filteredStories.map((story, index) => (
+              {stories.map((story, index) => (
                 <motion.div
                   key={story._id}
                   initial={{ opacity: 0, y: 20 }}
@@ -250,7 +219,7 @@ const Explore = () => {
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedCategory("All");
-                  setSelectedRegion("All");
+                  setSelectedLanguage("All");
                   setCurrentPage(1);
                 }}
                 variant="secondary"

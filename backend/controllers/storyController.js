@@ -7,9 +7,35 @@ export const getStories = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 9;
     const skip = (page - 1) * limit;
+    const search = req.query.search || "";
+    const category = req.query.category || "";
+    const language = req.query.language || "";
 
-    const totalItems = await StoryModel.countDocuments();
-    const stories = await StoryModel.find()
+    // Build query
+    const query = {};
+
+    // Add search filter (search across title, content, description, tags)
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { tags: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Add category filter
+    if (category && category !== "All") {
+      query.category = category;
+    }
+
+    // Add language filter
+    if (language && language !== "All") {
+      query.language = language;
+    }
+
+    const totalItems = await StoryModel.countDocuments(query);
+    const stories = await StoryModel.find(query)
       .populate("author", "fullName email")
       .sort({ createdAt: -1 })
       .skip(skip)

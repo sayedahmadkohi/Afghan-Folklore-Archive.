@@ -61,7 +61,8 @@ export const authAPI = {
 
 // Stories API
 export const storiesAPI = {
-  getAll: (page = 1, limit = 9) => api.get("/stories", { params: { page, limit } }),
+  getAll: (page = 1, limit = 9, search = "", category = "", language = "") =>
+    api.get("/stories", { params: { page, limit, search, category, language } }),
   getMy: () => api.get("/stories/my"),
   getOne: (id) => api.get(`/stories/${id}`),
   create: (formData) =>
