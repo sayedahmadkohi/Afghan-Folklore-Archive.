@@ -322,3 +322,31 @@ export const acceptRules = async (req, res, next) => {
     next(error);
   }
 };
+
+// POST /api/auth/toggle-save/:storyId
+export const toggleSave = async (req, res, next) => {
+  try {
+    const { storyId } = req.params;
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const storyIndex = user.savedStories.indexOf(storyId);
+    let isSaved;
+
+    if (storyIndex > -1) {
+      user.savedStories.splice(storyIndex, 1);
+      isSaved = false;
+    } else {
+      user.savedStories.push(storyId);
+      isSaved = true;
+    }
+
+    await user.save();
+    res.json({ saved: isSaved });
+  } catch (error) {
+    next(error);
+  }
+};

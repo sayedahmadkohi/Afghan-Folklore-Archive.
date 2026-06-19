@@ -21,7 +21,7 @@ import {
 import StoryCard from "../components/StoryCard";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import { storiesAPI } from "../services/api";
+import { storiesAPI, authAPI } from "../services/api";
 
 const StoryDetails = () => {
   const { id } = useParams();
@@ -37,6 +37,7 @@ const StoryDetails = () => {
   const [fontSize, setFontSize] = useState(18);
   const [readingProgress, setReadingProgress] = useState(0);
   const [likeLoading, setLikeLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   useEffect(() => {
     const fetchStory = async () => {
@@ -52,6 +53,10 @@ const StoryDetails = () => {
               (uid) => uid.toString() === user.id.toString(),
             ),
           );
+        }
+        // Check if current user already saved this story
+        if (isAuthenticated && user?.savedStories) {
+          setIsBookmarked(user.savedStories.includes(id));
         }
         // Fetch suggested stories with relevance scoring
         const allRes = await storiesAPI.getAll();
@@ -123,6 +128,41 @@ const StoryDetails = () => {
     }
   }, [id, isAuthenticated, likeLoading]);
 
+  const handleShare = useCallback(async () => {
+    const shareUrl = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: story.title,
+          text: story.description || story.title,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.error("Failed to share", err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Link copied to clipboard!");
+      } catch (err) {
+        console.error("Failed to copy to clipboard", err);
+      }
+    }
+  }, [story?.title, story?.description]);
+
+  const handleSave = useCallback(async () => {
+    if (!isAuthenticated || saveLoading) return;
+    setSaveLoading(true);
+    try {
+      const res = await authAPI.toggleSave(id);
+      setIsBookmarked(res.data.saved);
+    } catch (err) {
+      console.error("Failed to toggle save", err);
+    } finally {
+      setSaveLoading(false);
+    }
+  }, [id, isAuthenticated, saveLoading]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -139,7 +179,7 @@ const StoryDetails = () => {
     );
   }
 
-  const paragraphs = (story.content || "").split("\n\n");
+  const paragraphs = (story.content || "").split("\n");
 
   const mapStoryForCard = (s) => ({
     ...s,
@@ -329,12 +369,13 @@ const StoryDetails = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setIsBookmarked(!isBookmarked)}
+            onClick={handleSave}
+            disabled={!isAuthenticated || saveLoading}
             className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all ${
               isBookmarked
                 ? "bg-primary-accent/20 text-primary-accent border border-primary-accent"
                 : "bg-card-background border border-border text-text-secondary hover:border-primary-accent"
-            }`}
+            } ${!isAuthenticated ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             <Bookmark
               className={`w-5 h-5 ${isBookmarked ? "fill-current" : ""}`}
@@ -344,6 +385,7 @@ const StoryDetails = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={handleShare}
             className="flex items-center gap-2 px-6 py-3 rounded-full bg-card-background border border-border text-text-secondary hover:border-primary-accent transition-all"
           >
             <Share2 className="w-5 h-5" />

@@ -57,6 +57,7 @@ export const authAPI = {
     api.post("/auth/reset-password", { email, code, newPassword }),
   getMe: () => api.get("/auth/me"),
   acceptRules: () => api.put("/auth/accept-rules"),
+  toggleSave: (storyId) => api.post(`/auth/toggle-save/${storyId}`),
 };
 
 // Stories API

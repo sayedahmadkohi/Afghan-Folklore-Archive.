@@ -46,6 +46,12 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    savedStories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Story",
+      },
+    ],
   },
   { timestamps: true }
 );
