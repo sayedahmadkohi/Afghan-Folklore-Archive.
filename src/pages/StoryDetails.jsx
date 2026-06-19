@@ -197,42 +197,44 @@ const StoryDetails = () => {
             transition={{ duration: 0.8 }}
             className="max-w-4xl mx-auto space-y-4"
           >
-            <span className="inline-block px-4 py-2 rounded-full bg-primary-accent/90 text-background text-sm font-medium backdrop-blur-sm">
-              {story.category}
-            </span>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-text-primary leading-tight">
-              {story.title}
-            </h1>
-            <div className="flex flex-wrap items-center gap-4 text-text-secondary">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span>
-                  {story.author?.fullName || story.author?.name || "Unknown"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span>
-                  {new Date(story.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>
-                  {story.readingTime ||
-                    `${Math.max(
-                      5,
-                      Math.ceil((story.content?.length || 0) / 200),
-                    )} min`}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                <span>{viewsCount} Views</span>
+            <div className="bg-gradient-to-t from-black/30 via-black/15 to-transparent backdrop-blur-[2px] rounded-2xl p-6 md:p-8">
+              <span className="inline-block px-4 py-2 rounded-full bg-primary-accent/90 text-background text-sm font-medium backdrop-blur-sm">
+                {story.category}
+              </span>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mt-3">
+                {story.title}
+              </h1>
+              <div className="flex flex-wrap items-center gap-4 text-white/90 mt-4">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  <span>
+                    {story.author?.fullName || story.author?.name || "Unknown"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>
+                    {new Date(story.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>
+                    {story.readingTime ||
+                      `${Math.max(
+                        5,
+                        Math.ceil((story.content?.length || 0) / 200),
+                      )} min`}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  <span>{viewsCount} Views</span>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -263,7 +265,7 @@ const StoryDetails = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex flex-wrap items-center justify-between gap-4 mb-8 p-4 rounded-xl bg-card-background border border-border"
+          className="flex items-center gap-4 mb-8 p-4 rounded-xl bg-card-background border border-border"
         >
           <div className="flex items-center gap-2">
             <span className="text-sm text-text-secondary">Font Size:</span>
@@ -281,18 +283,6 @@ const StoryDetails = () => {
               className="p-2 rounded-lg bg-background-secondary border border-border hover:border-primary-accent transition-colors"
             >
               <Plus className="w-4 h-4 text-text-primary" />
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={setIsDarkMode}
-              className="p-2 rounded-lg bg-background-secondary border border-border hover:border-primary-accent transition-colors"
-            >
-              {isDarkMode ? (
-                <Moon className="w-4 h-4 text-primary-accent" />
-              ) : (
-                <Sun className="w-4 h-4 text-primary-accent" />
-              )}
             </button>
           </div>
         </motion.div>
@@ -376,7 +366,7 @@ const StoryDetails = () => {
             viewport={{ once: true }}
             className="space-y-8"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary">
+            <h2 className="text-2xl md:text-3xl font-semibold text-text-secondary">
               Suggested Stories
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
