@@ -189,78 +189,69 @@ const StoryDetails = () => {
             <ArrowLeft className="w-6 h-6 text-text-primary" />
           </motion.button>
         </Link>
-
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto space-y-4"
-          >
-            <div className="bg-gradient-to-t from-black/30 via-black/15 to-transparent backdrop-blur-[2px] rounded-2xl p-6 md:p-8">
-              <span className="inline-block px-4 py-2 rounded-full bg-primary-accent/90 text-background text-sm font-medium backdrop-blur-sm">
-                {story.category}
-              </span>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mt-3">
-                {story.title}
-              </h1>
-              <div className="flex flex-wrap items-center gap-4 text-white/90 mt-4">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  <span>
-                    {story.author?.fullName || story.author?.name || "Unknown"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  <span>
-                    {new Date(story.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  <span>
-                    {story.readingTime ||
-                      `${Math.max(
-                        5,
-                        Math.ceil((story.content?.length || 0) / 200),
-                      )} min`}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Eye className="w-4 h-4" />
-                  <span>{viewsCount} Views</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
       </div>
 
-      {/* Story Content */}
+      {/* Story Information Section */}
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="flex flex-wrap items-center gap-4 mb-8 pb-8 border-b border-border"
+          className="space-y-6 mb-12"
         >
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card-background border border-border">
-            <MapPin className="w-4 h-4 text-primary-accent" />
-            <span className="text-sm text-text-secondary">{story.region}</span>
+          <span className="inline-block px-4 py-2 rounded-full bg-primary-accent/90 text-background text-sm font-medium">
+            {story.category}
+          </span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary leading-tight">
+            {story.title}
+          </h1>
+          <div className="flex flex-wrap items-center gap-4 text-text-secondary">
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              <span>
+                {story.author?.fullName || story.author?.name || "Unknown"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              <span>
+                {new Date(story.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span>
+                {story.readingTime ||
+                  `${Math.max(
+                    5,
+                    Math.ceil((story.content?.length || 0) / 200),
+                  )} min`}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4" />
+              <span>{viewsCount} Views</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card-background border border-border">
-            <Globe className="w-4 h-4 text-primary-accent" />
-            <span className="text-sm text-text-secondary">
-              {story.language}
-            </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card-background border border-border">
+              <MapPin className="w-4 h-4 text-primary-accent" />
+              <span className="text-sm text-text-secondary">{story.region}</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card-background border border-border">
+              <Globe className="w-4 h-4 text-primary-accent" />
+              <span className="text-sm text-text-secondary">
+                {story.language}
+              </span>
+            </div>
           </div>
         </motion.div>
 
+        {/* Reading Controls Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -286,7 +277,10 @@ const StoryDetails = () => {
             </button>
           </div>
         </motion.div>
+      </div>
 
+      {/* Story Content */}
+      <div className="max-w-4xl mx-auto px-4 md:px-8 pb-12">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -308,6 +302,7 @@ const StoryDetails = () => {
           ))}
         </motion.div>
 
+        {/* Story Actions Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
