@@ -1,7 +1,9 @@
+// قوانین انجمن را در اینجا میسازه
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Heart, Ban, BookOpen, AlertTriangle, X } from "lucide-react";
 import Button from "./Button";
 
+// تعریف قوانین
 const CommunityRulesModal = ({ onAccept, onCancel }) => {
   const rules = [
     {
@@ -35,7 +37,7 @@ const CommunityRulesModal = ({ onAccept, onCancel }) => {
         "Whenever possible, submit stories that are authentic and rooted in Afghan oral traditions.",
     },
   ];
-
+  // ساختار اصلی مودال
   return (
     <AnimatePresence>
       <motion.div

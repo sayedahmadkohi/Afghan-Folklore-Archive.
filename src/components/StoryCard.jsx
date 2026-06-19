@@ -1,7 +1,8 @@
+// کامپونیت کارت داستان هست.
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Clock, MapPin, Globe, ArrowRight, Heart, Eye } from "lucide-react";
-
+// عکس پیش فرض
 const DEFAULT_IMAGE =
   "https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=800&q=80";
 
@@ -14,6 +15,7 @@ const StoryCard = ({ story }) => {
     story.readingTime ||
     `${Math.max(5, Math.ceil((story.content?.length || 0) / 200))} min`;
 
+  // ساختار اصلی کارت ها
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

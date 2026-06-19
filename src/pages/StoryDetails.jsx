@@ -27,10 +27,10 @@ const StoryDetails = () => {
   const { id } = useParams();
   const { isDark: isDarkMode, toggleTheme: setIsDarkMode } = useTheme();
   const { isAuthenticated, user } = useAuth();
-  const [story, setStory] = useState(null);
-  const [suggestedStories, setSuggestedStories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [story, setStory] = useState(null); // اطلاعات جاری داستان
+  const [suggestedStories, setSuggestedStories] = useState([]); // داستان پیشنهادی
+  const [loading, setLoading] = useState(true); // وضعیت بارگزاری
+  const [isBookmarked, setIsBookmarked] = useState(false); //وضعیت بوک مارک
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [viewsCount, setViewsCount] = useState(0);

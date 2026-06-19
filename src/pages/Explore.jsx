@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { Search, Filter, Grid, List, Loader2 } from "lucide-react";
 import StoryCard from "../components/StoryCard";
@@ -18,6 +18,7 @@ const Explore = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const isInitialMount = useRef(true);
 
   const categories = [
     "All",
@@ -40,7 +41,9 @@ const Explore = () => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        setLoading(true);
+        if (isInitialMount.current) {
+          setLoading(true);
+        }
         const res = await storiesAPI.getAll(
           currentPage,
           9,
@@ -55,6 +58,7 @@ const Explore = () => {
         console.error("Failed to fetch stories", err);
       } finally {
         setLoading(false);
+        isInitialMount.current = false;
       }
     };
     fetchStories();
