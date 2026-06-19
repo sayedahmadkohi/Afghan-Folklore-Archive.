@@ -53,14 +53,19 @@ const StoryDetails = () => {
             ),
           );
         }
-        // Fetch suggested stories
+        // Fetch suggested stories with relevance scoring
         const allRes = await storiesAPI.getAll();
-        const others = allRes.data.filter(
-          (s) =>
-            s._id !== res.data._id &&
-            (s.category === res.data.category || s.region === res.data.region),
-        );
-        setSuggestedStories(others.slice(0, 3));
+        const others = allRes.data.stories
+          .filter((s) => s._id !== res.data._id)
+          .map((s) => {
+            let score = 0;
+            if (s.category === res.data.category) score += 3;
+            if (s.language === res.data.language) score += 2;
+            return { ...s, score };
+          })
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 4);
+        setSuggestedStories(others);
       } catch (err) {
         console.error("Failed to fetch story", err);
       } finally {
