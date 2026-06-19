@@ -369,7 +369,7 @@ const StoryDetails = () => {
 
       {/* Suggested Stories */}
       {suggestedStories.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 md:px-8 py-16">
+        <section className="max-w-4xl mx-auto px-4 md:px-8 py-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -379,11 +379,12 @@ const StoryDetails = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-text-primary">
               Suggested Stories
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {suggestedStories.map((suggestedStory) => (
                 <StoryCard
                   key={suggestedStory._id}
                   story={mapStoryForCard(suggestedStory)}
+                  compact
                 />
               ))}
             </div>
