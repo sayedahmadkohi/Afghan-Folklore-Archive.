@@ -6,7 +6,7 @@
 export const getTextDirection = (language) => {
   if (!language) return 'ltr';
   
-  const rtlLanguages = ['Dari', 'Persian', 'fa', 'Pashto', 'ps', 'Arabic', 'ar'];
+  const rtlLanguages = ['Dari', 'Persian', 'fa', 'Pashto', 'ps', 'Arabic', 'ar', 'Uzbek', 'uz'];
   const normalizedLanguage = language.toLowerCase();
   
   return rtlLanguages.some(lang => normalizedLanguage.includes(lang.toLowerCase())) ? 'rtl' : 'ltr';

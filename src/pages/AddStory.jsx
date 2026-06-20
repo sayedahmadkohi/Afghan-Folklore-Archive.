@@ -21,6 +21,7 @@ import CommunityRulesModal from "../components/CommunityRulesModal";
 import { useAuth } from "../context/AuthContext";
 import { storiesAPI, authAPI } from "../services/api";
 import { getTextDirection } from "../utils/textDirection";
+import { REGIONS } from "../constants/regions";
 
 const MAX_CONTENT_LENGTH = 50000;
 
@@ -32,7 +33,6 @@ const categories = [
   "Epic Stories",
   "Mythology",
 ];
-const regions = ["Kabul", "Herat", "Balkh", "Bamyan", "Kandahar", "Badakhshan"];
 const languages = ["Dari", "Pashto", "Uzbek", "Arabic", "English"];
 
 const emptyForm = {
@@ -332,7 +332,7 @@ const AddStory = () => {
                     <option value="" className="bg-background-secondary">
                       Select a region
                     </option>
-                    {regions.map((r) => (
+                    {REGIONS.map((r) => (
                       <option
                         key={r}
                         value={r}

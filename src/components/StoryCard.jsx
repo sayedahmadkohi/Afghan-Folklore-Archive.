@@ -59,18 +59,18 @@ const StoryCard = ({ story, compact = false }) => {
             )}
 
             {/* Metadata */}
-            <div className={`flex flex-wrap items-center gap-2 text-text-secondary ${compact ? 'text-[10px]' : 'text-xs gap-3'}`}>
-              <div className="flex items-center space-x-1">
+            <div dir="ltr" className={`flex flex-wrap items-center gap-2 text-text-secondary ${compact ? 'text-[10px]' : 'text-xs gap-3'}`}>
+              <div className="flex items-center gap-2">
                 <MapPin className={compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
                 <span>{story.region}</span>
               </div>
               {language && (
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center gap-2">
                   <Globe className={compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
                   <span>{language}</span>
                 </div>
               )}
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center gap-2">
                 <Clock className={compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
                 <span>{readingTime}</span>
               </div>
