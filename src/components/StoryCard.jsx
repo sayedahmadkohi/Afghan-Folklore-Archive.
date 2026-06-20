@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Clock, MapPin, Globe, ArrowRight, Heart, Eye } from "lucide-react";
+import { getTextDirection } from "../utils/textDirection";
 // عکس پیش فرض
 const DEFAULT_IMAGE =
   "https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=800&q=80";
@@ -14,6 +15,7 @@ const StoryCard = ({ story, compact = false }) => {
   const readingTime =
     story.readingTime ||
     `${Math.max(5, Math.ceil((story.content?.length || 0) / 200))} min`;
+  const textDirection = getTextDirection(language);
 
   // ساختار اصلی کارت ها
   return (
@@ -45,7 +47,7 @@ const StoryCard = ({ story, compact = false }) => {
           </div>
 
           {/* Content */}
-          <div className={`space-y-2 ${compact ? 'p-3' : 'p-5 md:p-6 space-y-4'}`}>
+          <div className={`space-y-2 ${compact ? 'p-3' : 'p-5 md:p-6 space-y-4'}`} dir={textDirection}>
             <h3 className={`font-bold text-text-primary group-hover:text-primary-accent transition-colors line-clamp-2 ${compact ? 'text-sm' : 'text-xl md:text-2xl'}`}>
               {story.title}
             </h3>

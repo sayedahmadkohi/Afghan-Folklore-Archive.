@@ -22,6 +22,7 @@ import StoryCard from "../components/StoryCard";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { storiesAPI, authAPI } from "../services/api";
+import { getTextDirection } from "../utils/textDirection";
 
 const StoryDetails = () => {
   const { id } = useParams();
@@ -180,6 +181,7 @@ const StoryDetails = () => {
   }
 
   const paragraphs = (story.content || "").split("\n");
+  const textDirection = getTextDirection(story.language);
 
   const mapStoryForCard = (s) => ({
     ...s,
@@ -242,7 +244,7 @@ const StoryDetails = () => {
           <span className="inline-block px-4 py-2 rounded-full bg-primary-accent/90 text-background text-sm font-medium">
             {story.category}
           </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary leading-tight" dir={textDirection}>
             {story.title}
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-text-secondary">
@@ -320,7 +322,7 @@ const StoryDetails = () => {
       </div>
 
       {/* Story Content */}
-      <div className="max-w-4xl mx-auto px-4 md:px-8 pb-12">
+      <div className="max-w-4xl mx-auto px-4 md:px-8 pb-12" dir={textDirection}>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

@@ -20,6 +20,7 @@ import Button from "../components/Button";
 import CommunityRulesModal from "../components/CommunityRulesModal";
 import { useAuth } from "../context/AuthContext";
 import { storiesAPI, authAPI } from "../services/api";
+import { getTextDirection } from "../utils/textDirection";
 
 const MAX_CONTENT_LENGTH = 50000;
 
@@ -232,6 +233,8 @@ const AddStory = () => {
     100,
   );
 
+  const textDirection = getTextDirection(formData.language);
+
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative">
       {/* Community Rules Modal */}
@@ -297,7 +300,7 @@ const AddStory = () => {
                 Story Title <span className="text-red-400">*</span>
               </label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                <div className={`absolute top-1/2 -translate-y-1/2 ${textDirection === 'rtl' ? 'right-4' : 'left-4'}`}>
                   <BookOpen className="w-5 h-5 text-text-secondary" />
                 </div>
                 <input
@@ -305,7 +308,8 @@ const AddStory = () => {
                   value={formData.title}
                   onChange={(e) => handleChange("title", e.target.value)}
                   placeholder="Enter the title of your story"
-                  className="w-full bg-card-background border border-border rounded-lg px-4 py-3 pl-12 text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary-accent transition-all duration-300"
+                  dir={textDirection}
+                  className={`w-full bg-card-background border border-border rounded-lg px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary-accent transition-all duration-300 ${textDirection === 'rtl' ? 'pr-12' : 'pl-12'}`}
                 />
               </div>
             </div>
@@ -492,6 +496,7 @@ const AddStory = () => {
                 placeholder="Write your story here... Let the words carry the spirit of Afghan heritage."
                 rows={12}
                 maxLength={MAX_CONTENT_LENGTH}
+                dir={textDirection}
                 className="w-full bg-card-background border border-border rounded-xl px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary-accent transition-all duration-300 resize-y min-h-[300px] leading-relaxed"
               />
               <div className="h-1 w-full bg-border rounded-full overflow-hidden">
