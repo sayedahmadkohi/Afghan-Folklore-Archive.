@@ -13,6 +13,7 @@ import ForgotPassword from "../pages/ForgotPassword";
 import VerifyEmail from "../pages/VerifyEmail";
 import ResetPassword from "../pages/ResetPassword";
 import AddStory from "../pages/AddStory";
+import SavedStories from "../pages/SavedStories";
 
 // تنظمیات انمیشن
 const pageVariants = {
@@ -122,6 +123,16 @@ const AppLayout = () => {
                 <ProtectedRoute>
                   <AnimatedPage>
                     <AddStory />
+                  </AnimatedPage>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/saved"
+              element={
+                <ProtectedRoute>
+                  <AnimatedPage>
+                    <SavedStories />
                   </AnimatedPage>
                 </ProtectedRoute>
               }

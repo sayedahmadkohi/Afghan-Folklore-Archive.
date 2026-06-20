@@ -11,6 +11,7 @@ import {
   LogOut,
   LogIn,
   UserPlus,
+  Bookmark,
 } from "lucide-react"; // آیکن های بالا را از اینجا وارد کردیم
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
@@ -43,7 +44,10 @@ const Navbar = () => {
   const navLinks = [
     { name: "Explore Stories", path: "/explore", icon: BookOpen },
     ...(isAuthenticated
-      ? [{ name: "Add Story", path: "/add-story", icon: Plus }]
+      ? [
+          { name: "Saved Stories", path: "/saved", icon: Bookmark },
+          { name: "Add Story", path: "/add-story", icon: Plus },
+        ]
       : []),
   ];
   // بخش ششم نوار ناوبری اصلی

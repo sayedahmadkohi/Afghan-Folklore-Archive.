@@ -58,6 +58,7 @@ export const authAPI = {
   getMe: () => api.get("/auth/me"),
   acceptRules: () => api.put("/auth/accept-rules"),
   toggleSave: (storyId) => api.post(`/auth/toggle-save/${storyId}`),
+  getSavedStories: () => api.get("/auth/saved-stories"),
 };
 
 // Stories API

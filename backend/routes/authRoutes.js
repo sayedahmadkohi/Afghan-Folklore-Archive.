@@ -9,6 +9,7 @@ import {
   forgotPassword,
   resetPassword,
   toggleSave,
+  getSavedStories,
 } from "../controllers/authController.js";
 import protect from "../middleware/auth.js";
 
@@ -23,5 +24,6 @@ router.post("/reset-password", resetPassword);
 router.get("/me", protect, getMe);
 router.put("/accept-rules", protect, acceptRules);
 router.post("/toggle-save/:storyId", protect, toggleSave);
+router.get("/saved-stories", protect, getSavedStories);
 
 export default router;

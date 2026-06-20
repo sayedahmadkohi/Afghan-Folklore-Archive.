@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import StoryModel from "../models/Story.js";
 import {
   generateVerificationCode,
   hashCode,
@@ -346,6 +347,26 @@ export const toggleSave = async (req, res, next) => {
 
     await user.save();
     res.json({ saved: isSaved });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/auth/saved-stories
+export const getSavedStories = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).populate("savedStories");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const stories = await StoryModel.find({
+      _id: { $in: user.savedStories },
+    })
+      .populate("author", "fullName email")
+      .sort({ createdAt: -1 });
+
+    res.json(stories);
   } catch (error) {
     next(error);
   }
