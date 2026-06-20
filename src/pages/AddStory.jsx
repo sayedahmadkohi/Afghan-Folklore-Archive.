@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Button from "../components/Button";
 import CommunityRulesModal from "../components/CommunityRulesModal";
+import GuidelinesReminderModal from "../components/GuidelinesReminderModal";
 import { useAuth } from "../context/AuthContext";
 import { storiesAPI, authAPI } from "../services/api";
 import { getTextDirection } from "../utils/textDirection";
@@ -49,6 +50,7 @@ const AddStory = () => {
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [showRulesModal, setShowRulesModal] = useState(false);
+  const [showReminderModal, setShowReminderModal] = useState(false);
   const [formData, setFormData] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -61,8 +63,14 @@ const AddStory = () => {
 
   // Check if user has accepted rules
   useEffect(() => {
-    if (user && !user.acceptedRules) {
-      setShowRulesModal(true);
+    if (user) {
+      if (!user.acceptedRules) {
+        // First time: show full guidelines modal
+        setShowRulesModal(true);
+      } else {
+        // Subsequent visits: show reminder modal
+        setShowReminderModal(true);
+      }
     }
   }, [user]);
 
@@ -94,6 +102,20 @@ const AddStory = () => {
   };
 
   const handleCancelRules = () => {
+    navigate("/");
+  };
+
+  const handleReminderContinue = () => {
+    setShowReminderModal(false);
+  };
+
+  const handleReminderViewFull = () => {
+    setShowReminderModal(false);
+    setShowRulesModal(true);
+  };
+
+  const handleReminderCancel = () => {
+    setShowReminderModal(false);
     navigate("/");
   };
 
@@ -242,6 +264,15 @@ const AddStory = () => {
         <CommunityRulesModal
           onAccept={handleAcceptRules}
           onCancel={handleCancelRules}
+        />
+      )}
+
+      {/* Guidelines Reminder Modal */}
+      {showReminderModal && (
+        <GuidelinesReminderModal
+          onContinue={handleReminderContinue}
+          onViewFull={handleReminderViewFull}
+          onCancel={handleReminderCancel}
         />
       )}
 
