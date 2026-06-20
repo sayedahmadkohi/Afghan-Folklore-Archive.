@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Filter, Grid, List, Loader2 } from "lucide-react";
 import StoryCard from "../components/StoryCard";
@@ -9,17 +10,11 @@ import Pagination from "../components/Pagination";
 import { storiesAPI } from "../services/api";
 
 const Explore = () => {
+  const [searchParams] = useSearchParams();
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedLanguage, setSelectedLanguage] = useState("All");
-  const [viewMode, setViewMode] = useState("grid");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const isInitialMount = useRef(true);
-
+  
   const categories = [
     "All",
     "Legends",
@@ -29,6 +24,21 @@ const Explore = () => {
     "Epic Stories",
     "Mythology",
   ];
+  
+  // Initialize category from URL parameter
+  const initialCategory = (() => {
+    const categoryParam = searchParams.get("category");
+    return (categoryParam && categories.includes(categoryParam)) ? categoryParam : "All";
+  })();
+  
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [selectedLanguage, setSelectedLanguage] = useState("All");
+  const [viewMode, setViewMode] = useState("grid");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const isInitialMount = useRef(true);
+
   const languages = [
     "All",
     "Dari",

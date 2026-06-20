@@ -185,26 +185,30 @@ const Home = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {categories.map((category, index) => (
-              <motion.div
+              <Link
                 key={category.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className="group cursor-pointer"
+                to={`/explore?category=${encodeURIComponent(category.name)}`}
               >
-                <div className="glass rounded-xl p-6 text-center space-y-4 hover:border-primary-accent/30 transition-all">
-                  <div
-                    className={`w-12 h-12 rounded-full bg-gradient-to-br ${category.color} mx-auto flex items-center justify-center`}
-                  >
-                    <category.icon className="w-6 h-6 text-white" />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="group cursor-pointer"
+                >
+                  <div className="glass rounded-xl p-6 text-center space-y-4 hover:border-primary-accent/30 transition-all">
+                    <div
+                      className={`w-12 h-12 rounded-full bg-gradient-to-br ${category.color} mx-auto flex items-center justify-center`}
+                    >
+                      <category.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-text-primary font-medium group-hover:text-primary-accent transition-colors">
+                      {category.name}
+                    </h3>
                   </div>
-                  <h3 className="text-text-primary font-medium group-hover:text-primary-accent transition-colors">
-                    {category.name}
-                  </h3>
-                </div>
-              </motion.div>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </motion.div>
