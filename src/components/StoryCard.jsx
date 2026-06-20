@@ -16,6 +16,11 @@ const StoryCard = ({ story, compact = false }) => {
     story.readingTime ||
     `${Math.max(5, Math.ceil((story.content?.length || 0) / 200))} min`;
   const textDirection = getTextDirection(language);
+  
+  // Create excerpt from content (first 150 characters, then truncate to word boundary)
+  const excerpt = story.content
+    ? story.content.substring(0, 150).split(' ').slice(0, -1).join(' ') + '...'
+    : story.description || '';
 
   // ساختار اصلی کارت ها
   return (
@@ -53,8 +58,8 @@ const StoryCard = ({ story, compact = false }) => {
             </h3>
 
             {!compact && (
-              <p className="text-text-secondary text-sm line-clamp-2 leading-relaxed">
-                {story.description}
+              <p className="text-text-secondary text-sm line-clamp-3 leading-relaxed">
+                {excerpt}
               </p>
             )}
 
