@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"; // برای ناوبری بین صفحات بدون ریفریش
-import { BookOpen, Mail, Github, Twitter } from "lucide-react"; // آیکن های کتاب
+import { BookOpen, Mail, Github } from "lucide-react"; // آیکن های کتاب
 import { useAuth } from "../context/AuthContext"; // هوک سفارسی برای احزار هویت
 
 // تعریف کامپونیت
@@ -8,16 +8,16 @@ const Footer = () => {
 
   // لینک داینامیک های فوتر
   const footerLinks = [
-    { name: "Explore Stories", path: "/explore" },
+    { name: "Explore", path: "/explore" },
     { name: "Add Story", path: isAuthenticated ? "/add-story" : "/login" },
-    { name: "About", path: "/" },
+    { name: "About", path: "/about" },
   ];
 
   // ساختار اصلی فوتر
   return (
     <footer className="bg-background-secondary border-t border-border mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-3">
@@ -49,18 +49,6 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
-              {!isAuthenticated && (
-                <>
-                  <li>
-                    <Link
-                      to="/register"
-                      className="text-text-secondary hover:text-primary-accent transition-colors text-sm"
-                    >
-                      Register
-                    </Link>
-                  </li>
-                </>
-              )}
             </ul>
           </div>
 
@@ -69,19 +57,17 @@ const Footer = () => {
             <h3 className="text-text-primary font-semibold">Connect</h3>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="mailto:example@gmail.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-card-background border border-border hover:border-primary-accent transition-colors group"
               >
                 <Mail className="w-5 h-5 text-text-secondary group-hover:text-primary-accent transition-colors" />
               </a>
               <a
-                href="#"
-                className="p-2 rounded-lg bg-card-background border border-border hover:border-primary-accent transition-colors group"
-              >
-                <Twitter className="w-5 h-5 text-text-secondary group-hover:text-primary-accent transition-colors" />
-              </a>
-              <a
-                href="#"
+                href="https://github.com/yourusername/afghan-folklore-archive"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-card-background border border-border hover:border-primary-accent transition-colors group"
               >
                 <Github className="w-5 h-5 text-text-secondary group-hover:text-primary-accent transition-colors" />

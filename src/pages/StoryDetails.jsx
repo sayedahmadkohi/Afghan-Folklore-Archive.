@@ -27,7 +27,7 @@ import { getTextDirection } from "../utils/textDirection";
 const StoryDetails = () => {
   const { id } = useParams();
   const { isDark: isDarkMode, toggleTheme: setIsDarkMode } = useTheme();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, updateUser } = useAuth();
   const [story, setStory] = useState(null); // اطلاعات جاری داستان
   const [suggestedStories, setSuggestedStories] = useState([]); // داستان پیشنهادی
   const [loading, setLoading] = useState(true); // وضعیت بارگزاری
@@ -157,12 +157,19 @@ const StoryDetails = () => {
     try {
       const res = await authAPI.toggleSave(id);
       setIsBookmarked(res.data.saved);
+      // Sync user context savedStories array
+      if (user) {
+        const updatedSavedStories = res.data.saved
+          ? [...(user.savedStories || []), id]
+          : (user.savedStories || []).filter((storyId) => storyId !== id);
+        updateUser({ ...user, savedStories: updatedSavedStories });
+      }
     } catch (err) {
       console.error("Failed to toggle save", err);
     } finally {
       setSaveLoading(false);
     }
-  }, [id, isAuthenticated, saveLoading]);
+  }, [id, isAuthenticated, saveLoading, user, updateUser]);
 
   if (loading) {
     return (

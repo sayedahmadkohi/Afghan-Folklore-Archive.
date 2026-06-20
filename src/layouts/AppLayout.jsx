@@ -14,6 +14,7 @@ import VerifyEmail from "../pages/VerifyEmail";
 import ResetPassword from "../pages/ResetPassword";
 import AddStory from "../pages/AddStory";
 import SavedStories from "../pages/SavedStories";
+import About from "../pages/About";
 
 // تنظمیات انمیشن
 const pageVariants = {
@@ -66,6 +67,14 @@ const AppLayout = () => {
               element={
                 <AnimatedPage>
                   <Explore />
+                </AnimatedPage>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <AnimatedPage>
+                  <About />
                 </AnimatedPage>
               }
             />
