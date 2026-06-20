@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProtectedRoute from "../components/ProtectedRoute";
+import ScrollToTop from "../components/ScrollToTop";
 import Home from "../pages/Home";
 import Explore from "../pages/Explore";
 import StoryDetails from "../pages/StoryDetails";
@@ -48,6 +49,7 @@ const AnimatedPage = ({ children }) => (
 const AppLayout = () => {
   return (
     <div className="min-h-screen bg-background">
+      <ScrollToTop />
       <Navbar />
 
       <main className="pt-16 md:pt-20">

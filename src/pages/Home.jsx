@@ -23,7 +23,7 @@ const Home = () => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const res = await storiesAPI.getAll();
+        const res = await storiesAPI.getAll(1, 1000);
         setStories(res.data.stories);
       } catch (err) {
         console.error("Failed to fetch stories", err);
