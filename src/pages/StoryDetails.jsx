@@ -80,7 +80,7 @@ const StoryDetails = () => {
     };
     fetchStory();
     window.scrollTo(0, 0);
-  }, [id, isAuthenticated, user?.id]);
+  }, [id, isAuthenticated, user?.id, user?.savedStories]);
 
   // Increment view count on story visit (with client-side anti-spam)
   useEffect(() => {
