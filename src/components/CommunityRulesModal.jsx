@@ -150,19 +150,23 @@ const CommunityRulesModal = ({ onAccept, onCancel }) => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative z-10 w-full max-w-2xl glass rounded-2xl p-6 md:p-8"
+          className="relative z-10 w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-xl"
+          style={{ backgroundColor: '#FAF8F3', border: '1px solid rgba(139, 115, 85, 0.2)' }}
         >
           {/* Close Button */}
           <button
             onClick={onCancel}
-            className="absolute top-4 right-4 p-2 rounded-lg bg-card-background border border-border hover:border-primary-accent transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-lg transition-colors hover:bg-white/50"
+            style={{ border: '1px solid rgba(139, 115, 85, 0.2)' }}
           >
             <X className="w-5 h-5 text-text-secondary" />
           </button>
 
           {/* Language Selector */}
           <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center space-x-2 bg-card-background border border-border rounded-lg p-1">
+            <div className="inline-flex items-center space-x-2 rounded-lg p-1"
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', border: '1px solid rgba(139, 115, 85, 0.2)' }}
+            >
               {["English", "فارسی", "پشتو"].map((lang) => (
                 <button
                   key={lang}
@@ -211,7 +215,8 @@ const CommunityRulesModal = ({ onAccept, onCancel }) => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 + index * 0.1 }}
-                className="flex items-start space-x-4 p-4 rounded-xl bg-background-secondary border border-border"
+                className="flex items-start space-x-4 p-4 rounded-xl"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', border: '1px solid rgba(139, 115, 85, 0.15)' }}
               >
                 <div className="w-10 h-10 rounded-lg bg-primary-accent/10 flex items-center justify-center flex-shrink-0">
                   <rule.icon className="w-5 h-5 text-primary-accent" />

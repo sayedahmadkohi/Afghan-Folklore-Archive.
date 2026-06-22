@@ -60,6 +60,7 @@ const AddStory = () => {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [myStories, setMyStories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [visibleStoryCount, setVisibleStoryCount] = useState(5);
 
   // Check if user has accepted rules
   useEffect(() => {
@@ -112,6 +113,18 @@ const AddStory = () => {
   const handleReminderViewFull = () => {
     setShowReminderModal(false);
     setShowRulesModal(true);
+  };
+
+  const handleAcceptRulesFromReminder = async () => {
+    try {
+      await authAPI.acceptRules();
+      const updatedUser = { ...user, acceptedRules: true };
+      updateUser(updatedUser);
+      setShowRulesModal(false);
+      // Reminder modal is already closed at this point
+    } catch (err) {
+      setError("Failed to accept rules. Please try again.");
+    }
   };
 
   const handleReminderCancel = () => {
@@ -258,11 +271,11 @@ const AddStory = () => {
   const textDirection = getTextDirection(formData.language);
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative">
+    <>
       {/* Community Rules Modal */}
       {showRulesModal && (
         <CommunityRulesModal
-          onAccept={handleAcceptRules}
+          onAccept={handleAcceptRulesFromReminder}
           onCancel={handleCancelRules}
         />
       )}
@@ -276,7 +289,8 @@ const AddStory = () => {
         />
       )}
 
-      <div className="max-w-4xl mx-auto space-y-12">
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative">
+        <div className="max-w-4xl mx-auto space-y-12">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -598,102 +612,115 @@ const AddStory = () => {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {myStories.map((story, index) => (
-                <motion.div
-                  key={story._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="glass rounded-xl p-5 md:p-6"
-                >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex-1 space-y-2">
-                      <h3 className="text-lg font-bold text-text-primary">
-                        {story.title}
-                      </h3>
-                      <div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
-                        <span className="px-3 py-1 rounded-full bg-primary-accent/10 text-primary-accent text-xs font-medium">
-                          {story.category}
-                        </span>
-                        <div className="flex items-center space-x-1.5">
-                          <MapPin className="w-3.5 h-3.5" />
-                          <span>{story.region}</span>
+            <>
+              <div className="space-y-4">
+                {myStories.slice(0, visibleStoryCount).map((story, index) => (
+                  <motion.div
+                    key={story._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="glass rounded-xl p-5 md:p-6"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex-1 space-y-2">
+                        <h3 className="text-lg font-bold text-text-primary">
+                          {index + 1}. {story.title}
+                        </h3>
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
+                          <span className="px-3 py-1 rounded-full bg-primary-accent/10 text-primary-accent text-xs font-medium">
+                            {story.category}
+                          </span>
+                          <div className="flex items-center space-x-1.5">
+                            <MapPin className="w-3.5 h-3.5" />
+                            <span>{story.region}</span>
+                          </div>
+                          <span className="text-xs">
+                            {new Date(story.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              },
+                            )}
+                          </span>
                         </div>
-                        <span className="text-xs">
-                          {new Date(story.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            },
-                          )}
-                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleEdit(story)}
+                          className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-sm"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                          <span>Edit</span>
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setDeleteConfirmId(story._id)}
+                          className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors text-sm"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>Delete</span>
+                        </motion.button>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleEdit(story)}
-                        className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-sm"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                        <span>Edit</span>
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setDeleteConfirmId(story._id)}
-                        className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors text-sm"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        <span>Delete</span>
-                      </motion.button>
-                    </div>
-                  </div>
-                  <AnimatePresence>
-                    {deleteConfirmId === story._id && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-4 pt-4 border-t border-border"
-                      >
-                        <div className="flex items-center justify-between">
-                          <p className="text-text-secondary text-sm">
-                            Are you sure you want to delete{" "}
-                            <span className="text-text-primary font-medium">
-                              "{story.title}"
-                            </span>
-                            ?
-                          </p>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => setDeleteConfirmId(null)}
-                              className="px-3 py-1.5 rounded-lg text-sm text-text-secondary hover:text-text-primary transition-colors"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={() => handleDelete(story._id)}
-                              className="px-3 py-1.5 rounded-lg text-sm bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
-                            >
-                              Delete
-                            </button>
+                    <AnimatePresence>
+                      {deleteConfirmId === story._id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-4 pt-4 border-t border-border"
+                        >
+                          <div className="flex items-center justify-between">
+                            <p className="text-text-secondary text-sm">
+                              Are you sure you want to delete{" "}
+                              <span className="text-text-primary font-medium">
+                                "{story.title}"
+                              </span>
+                              ?
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => setDeleteConfirmId(null)}
+                                className="px-3 py-1.5 rounded-lg text-sm text-text-secondary hover:text-text-primary transition-colors"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={() => handleDelete(story._id)}
+                                className="px-3 py-1.5 rounded-lg text-sm bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))}
-            </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </div>
+              {myStories.length > visibleStoryCount && (
+                <div className="text-center pt-4">
+                  <button
+                    onClick={() => setVisibleStoryCount(prev => prev + 5)}
+                    className="px-6 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-sm font-medium"
+                  >
+                    See More
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </motion.div>
       </div>
     </div>
+    </>
   );
 };
 
