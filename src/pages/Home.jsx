@@ -160,7 +160,7 @@ const Home = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredStories.map((story) => (
-              <StoryCard key={story.id} story={story} />
+              <StoryCard key={story._id} story={story} />
             ))}
           </div>
         </motion.div>

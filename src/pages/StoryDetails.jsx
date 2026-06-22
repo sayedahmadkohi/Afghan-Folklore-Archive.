@@ -337,18 +337,28 @@ const StoryDetails = () => {
           className="prose prose-lg max-w-none dark:prose-invert prose-gray"
           style={{ fontSize: `${fontSize}px`, lineHeight: "1.8" }}
         >
-          {paragraphs.map((paragraph, index) => (
-            <motion.p
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: index * 0.05 }}
-              className="mb-6 text-text-primary"
-            >
-              {paragraph}
-            </motion.p>
-          ))}
+          {paragraphs.length > 50 ? (
+            // Long story: render regular paragraphs without motion for performance
+            paragraphs.map((paragraph, index) => (
+              <p key={index} className="mb-6 text-text-primary">
+                {paragraph}
+              </p>
+            ))
+          ) : (
+            // Short story: keep staggered animation for visual effect
+            paragraphs.map((paragraph, index) => (
+              <motion.p
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ delay: index * 0.05 }}
+                className="mb-6 text-text-primary"
+              >
+                {paragraph}
+              </motion.p>
+            ))
+          )}
         </motion.div>
 
         {/* Story Actions Section */}
