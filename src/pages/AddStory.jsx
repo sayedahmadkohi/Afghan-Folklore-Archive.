@@ -66,22 +66,11 @@ const AddStory = () => {
   const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
-  // Diagnostic logging
-  console.log('[AddStory] Render - user:', user);
-  console.log('[AddStory] Render - user.acceptedRules:', user?.acceptedRules);
-  console.log('[AddStory] Render - showReminderModal:', showReminderModal);
-
   // Check if user has accepted rules
   useEffect(() => {
-    console.log('[AddStory] Reminder useEffect running');
-    console.log('[AddStory] Reminder useEffect - user:', user);
-    console.log('[AddStory] Reminder useEffect - user.acceptedRules:', user?.acceptedRules);
-    console.log('[AddStory] Reminder useEffect - condition (user && !user.acceptedRules):', user && !user.acceptedRules);
     if (user && !user.acceptedRules) {
-      console.log('[AddStory] Reminder useEffect - calling setShowReminderModal(true)');
       // Only show reminder modal if user hasn't accepted rules
       setShowReminderModal(true);
-      console.log("[AddStory] setShowReminderModal called");
     }
   }, [user]);
 
@@ -337,11 +326,6 @@ const AddStory = () => {
   );
 
   const textDirection = getTextDirection(formData.language);
-  console.log("Modal states:", {
-  showReminderModal,
-  showRulesModal,
-  user
-});
 
   return (
     <>

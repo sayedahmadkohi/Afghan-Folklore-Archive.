@@ -149,28 +149,31 @@ const CommunityRulesModal = ({ onAccept, onCancel, selectedLanguage, onLanguageC
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 md:p-8 shadow-2xl bg-card-background border-2 border-border dark:border-border/60 scrollbar-minimal"
+            className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-0 shadow-2xl bg-background-secondary border border-border/20 dark:bg-card-background dark:border-border/30 scrollbar-minimal backdrop-blur-xl"
           >
+            {/* Decorative gradient border */}
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary-accent/5 via-transparent to-secondary-accent/5 pointer-events-none" />
+            <div className="absolute inset-0 rounded-3xl border border-border/30 dark:border-border/40 pointer-events-none" />
           {/* Close Button */}
           <button
             onClick={onCancel}
-            className="absolute top-4 right-4 p-2 rounded-lg transition-colors hover:bg-background-secondary border border-border dark:border-border/50"
+            className="absolute top-5 right-5 z-20 p-2.5 rounded-xl transition-all hover:bg-background-secondary/80 border border-border/30 dark:border-border/40 hover:border-border/50"
           >
             <X className="w-5 h-5 text-text-secondary" />
           </button>
 
           {/* Language Selector */}
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center space-x-2 rounded-lg p-1 bg-background-secondary border border-border dark:border-border/50"
+          <div className="flex justify-center pt-6 pb-4 px-6">
+            <div className="inline-flex items-center space-x-1.5 rounded-2xl p-1 bg-background-secondary/60 border border-border/30 dark:border-border/40 backdrop-blur-sm"
             >
               {["English", "فارسی", "پشتو"].map((lang) => (
                 <button
                   key={lang}
                   onClick={() => onLanguageChange(lang)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all ${
+                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl transition-all ${
                     selectedLanguage === lang
-                      ? "bg-primary-accent text-background"
-                      : "text-text-secondary hover:text-text-primary hover:bg-background/50"
+                      ? "bg-gradient-to-r from-primary-accent to-secondary-accent text-background shadow-md"
+                      : "text-text-secondary hover:text-text-primary hover:bg-background/40"
                   }`}
                 >
                   <Globe className="w-4 h-4" />
@@ -181,7 +184,7 @@ const CommunityRulesModal = ({ onAccept, onCancel, selectedLanguage, onLanguageC
           </div>
 
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-8 px-6">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -191,33 +194,33 @@ const CommunityRulesModal = ({ onAccept, onCancel, selectedLanguage, onLanguageC
                 damping: 15,
                 delay: 0.1,
               }}
-              className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-accent to-secondary-accent flex items-center justify-center mx-auto mb-5 shadow-lg"
+              className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary-accent via-primary-accent/90 to-secondary-accent flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-primary-accent/25"
             >
-              <Shield className="w-10 h-10 text-background" />
+              <Shield className="w-12 h-12 text-background" />
             </motion.div>
-            <h2 className="text-2xl md:text-3xl font-bold text-text-primary">
+            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-text-primary to-text-secondary bg-clip-text text-transparent">
               {currentTranslation.title}
             </h2>
-            <p className="text-text-secondary mt-3 text-base">
+            <p className="text-text-secondary mt-4 text-base leading-relaxed max-w-lg mx-auto">
               {currentTranslation.description}
             </p>
           </div>
 
           {/* Rules */}
-          <div className="space-y-3 mb-8">
+          <div className="space-y-4 mb-8 px-6">
             {currentTranslation.rules.map((rule, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 + index * 0.1 }}
-                className="flex items-start space-x-4 p-4 rounded-xl bg-background-secondary/80 border border-border dark:border-border/50 hover:bg-background-secondary transition-colors"
+                transition={{ delay: 0.1 + index * 0.08 }}
+                className="flex items-start space-x-4 p-5 rounded-2xl bg-background-secondary/40 border border-border/30 dark:border-border/40 hover:bg-background-secondary/60 hover:border-border/50 transition-all group"
               >
-                <div className="w-11 h-11 rounded-lg bg-primary-accent/15 flex items-center justify-center flex-shrink-0">
-                  <rule.icon className="w-5.5 h-5.5 text-primary-accent" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-accent/20 to-secondary-accent/20 flex items-center justify-center flex-shrink-0 group-hover:from-primary-accent/30 group-hover:to-secondary-accent/30 transition-colors">
+                  <rule.icon className="w-6 h-6 text-primary-accent" />
                 </div>
-                <div>
-                  <h3 className="text-text-primary font-semibold mb-1.5 text-base">
+                <div className="flex-1">
+                  <h3 className="text-text-primary font-semibold mb-2 text-base">
                     {rule.title}
                   </h3>
                   <p className="text-text-secondary text-sm leading-relaxed">
@@ -229,11 +232,11 @@ const CommunityRulesModal = ({ onAccept, onCancel, selectedLanguage, onLanguageC
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button variant="secondary" onClick={onCancel} className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-3 px-6 pb-8">
+            <Button variant="secondary" onClick={onCancel} className="flex-1 h-12 text-base">
               {currentTranslation.cancel}
             </Button>
-            <Button onClick={onAccept} className="flex-1">
+            <Button onClick={onAccept} className="flex-1 h-12 text-base bg-gradient-to-r from-primary-accent to-secondary-accent hover:from-primary-accent/90 hover:to-secondary-accent/90 shadow-lg shadow-primary-accent/25">
               {currentTranslation.accept}
             </Button>
           </div>

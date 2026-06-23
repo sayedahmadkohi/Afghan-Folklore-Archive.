@@ -51,31 +51,34 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel, selectedLan
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-5 md:p-6 shadow-lg bg-card-background border border-border dark:border-border/50 scrollbar-minimal"
+            className="relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl p-0 shadow-xl bg-background-secondary border border-border/20 dark:bg-card-background dark:border-border/30 scrollbar-minimal backdrop-blur-xl"
           >
+            {/* Decorative gradient border */}
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary-accent/5 via-transparent to-secondary-accent/5 pointer-events-none" />
+            <div className="absolute inset-0 rounded-3xl border border-border/30 dark:border-border/40 pointer-events-none" />
           {/* Close Button */}
           <button
             onClick={onCancel}
-            className="absolute top-4 right-4 p-2 rounded-lg transition-colors hover:bg-background-secondary border border-border dark:border-border/50"
+            className="absolute top-4 right-4 z-20 p-2 rounded-xl transition-all hover:bg-background-secondary/80 border border-border/30 dark:border-border/40 hover:border-border/50"
           >
-            <X className="w-5 h-5 text-text-secondary" />
+            <X className="w-4 h-4 text-text-secondary" />
           </button>
 
           {/* Language Selector */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex items-center space-x-1.5 rounded-md p-0.5 bg-background-secondary/50 border border-border dark:border-border/30"
+          <div className="flex justify-center pt-5 pb-4 px-5">
+            <div className="inline-flex items-center space-x-1 rounded-2xl p-1 bg-background-secondary/50 border border-border/30 dark:border-border/40 backdrop-blur-sm"
             >
               {["English", "فارسی", "پشتو"].map((lang) => (
                 <button
                   key={lang}
                   onClick={() => onLanguageChange(lang)}
-                  className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-sm transition-all ${
+                  className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl transition-all ${
                     selectedLanguage === lang
-                      ? "bg-primary-accent text-background"
-                      : "text-text-secondary hover:text-text-primary hover:bg-background/30"
+                      ? "bg-gradient-to-r from-primary-accent to-secondary-accent text-background shadow-sm"
+                      : "text-text-secondary hover:text-text-primary hover:bg-background/40"
                   }`}
                 >
-                  <Globe className="w-3 h-3" />
+                  <Globe className="w-3.5 h-3.5" />
                   <span className="text-xs font-medium">{lang}</span>
                 </button>
               ))}
@@ -83,7 +86,7 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel, selectedLan
           </div>
 
           {/* Header */}
-          <div className="text-center mb-4">
+          <div className="text-center mb-6 px-5">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -93,29 +96,29 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel, selectedLan
                 damping: 15,
                 delay: 0.1,
               }}
-              className="w-12 h-12 rounded-full bg-primary-accent/10 flex items-center justify-center mx-auto mb-3"
+              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-accent/20 to-secondary-accent/20 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-accent/15"
             >
-              <Info className="w-5 h-5 text-primary-accent" />
+              <Info className="w-7 h-7 text-primary-accent" />
             </motion.div>
-            <h2 className="text-lg md:text-xl font-semibold text-text-primary">
+            <h2 className="text-xl md:text-2xl font-semibold text-text-primary">
               {currentTranslation.title}
             </h2>
-            <p className="text-text-secondary mt-1.5 text-xs">
+            <p className="text-text-secondary mt-3 text-sm leading-relaxed">
               {currentTranslation.message}
             </p>
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3 px-5 pb-6">
             <Button
               variant="secondary"
               onClick={onViewFull}
-              className="flex-1 text-sm"
+              className="w-full h-11 text-sm"
             >
               {currentTranslation.viewFull}
             </Button>
-            <Button onClick={onContinue} className="flex-1 text-sm">
-              <Check className="w-3.5 h-3.5 mr-1.5" />
+            <Button onClick={onContinue} className="w-full h-11 text-sm bg-gradient-to-r from-primary-accent to-secondary-accent hover:from-primary-accent/90 hover:to-secondary-accent/90 shadow-md shadow-primary-accent/20">
+              <Check className="w-4 h-4 mr-2" />
               {currentTranslation.continue}
             </Button>
           </div>
