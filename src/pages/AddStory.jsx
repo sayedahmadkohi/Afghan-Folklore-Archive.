@@ -458,7 +458,7 @@ const AddStory = () => {
                           <button
                             key={province}
                             type="button"
-                            onClick={() => handleProvinceSelect(province)}
+                            onMouseDown={() => handleProvinceSelect(province)}
                             onDoubleClick={() => handleProvinceSelect(province)}
                             className={`w-full px-4 py-2 text-left transition-colors ${
                               index === highlightedIndex

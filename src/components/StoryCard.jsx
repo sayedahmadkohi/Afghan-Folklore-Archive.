@@ -58,7 +58,7 @@ const StoryCard = ({ story, compact = false }) => {
             </h3>
 
             {!compact && (
-              <p className="text-text-secondary text-sm line-clamp-3 leading-relaxed">
+              <p className="text-text-secondary text-sm line-clamp-3 leading-relaxed min-h-[4.5em]">
                 {excerpt}
               </p>
             )}
