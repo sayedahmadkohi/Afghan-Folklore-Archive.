@@ -123,7 +123,7 @@ const Home = () => {
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-primary-accent" />
-              <span>7 Regions</span>
+              <span>34 Provinces</span>
             </div>
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-primary-accent" />

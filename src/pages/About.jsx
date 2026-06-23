@@ -47,7 +47,7 @@ const About = () => {
           </div>
           <p className="text-text-secondary leading-relaxed">
             Our mission is to create a modern archive where Afghan stories from
-            different regions, languages, and traditions can be documented and
+            different provinces, languages, and traditions can be documented and
             discovered for future generations.
           </p>
         </motion.div>
@@ -66,7 +66,7 @@ const About = () => {
           <ul className="space-y-4 text-text-secondary">
             <li className="flex items-start gap-3">
               <div className="w-2 h-2 rounded-full bg-primary-accent mt-2 flex-shrink-0" />
-              <span>Explore folklore stories by category and region</span>
+              <span>Explore folklore stories by category and province</span>
             </li>
             <li className="flex items-start gap-3">
               <div className="w-2 h-2 rounded-full bg-primary-accent mt-2 flex-shrink-0" />

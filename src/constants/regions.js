@@ -1,24 +1,47 @@
 /**
  * Regional constants for the Afghan Folklore Archive
- * These are the cultural/geographic regions of Afghanistan
+ * These are the 34 provinces of Afghanistan in English transliteration
+ * The field name remains "region" for database compatibility
  */
 
 export const REGIONS = [
-  "North",
-  "Northeast",
-  "Central",
-  "East",
-  "West",
-  "South",
-  "Southwest",
+  "Badakhshan",
+  "Badghis",
+  "Baghlan",
+  "Balkh",
+  "Bamyan",
+  "Daykundi",
+  "Farah",
+  "Faryab",
+  "Ghazni",
+  "Ghor",
+  "Helmand",
+  "Herat",
+  "Jawzjan",
+  "Kabul",
+  "Kandahar",
+  "Kapisa",
+  "Khost",
+  "Kunar",
+  "Kunduz",
+  "Laghman",
+  "Logar",
+  "Nangarhar",
+  "Nimruz",
+  "Nuristan",
+  "Paktia",
+  "Paktika",
+  "Panjshir",
+  "Parwan",
+  "Samangan",
+  "Sar-e Pol",
+  "Takhar",
+  "Urozgan",
+  "Wardak",
+  "Zabul",
 ];
 
-export const REGION_DESCRIPTIONS = [
-  { name: "North", description: "Northern cultural heartland" },
-  { name: "Northeast", description: "Mountain valleys and passes" },
-  { name: "Central", description: "Historic central region" },
-  { name: "East", description: "Eastern borderlands" },
-  { name: "West", description: "Western cultural zone" },
-  { name: "South", description: "Southern heritage" },
-  { name: "Southwest", description: "Southwestern territories" },
-];
+export const REGION_DESCRIPTIONS = REGIONS.map((province) => ({
+  name: province,
+  description: `${province} Province`,
+}));

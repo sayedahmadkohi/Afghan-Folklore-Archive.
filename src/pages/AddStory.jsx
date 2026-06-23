@@ -61,6 +61,8 @@ const AddStory = () => {
   const [myStories, setMyStories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [visibleStoryCount, setVisibleStoryCount] = useState(5);
+  const [provinceSearch, setProvinceSearch] = useState("");
+  const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
 
   // Check if user has accepted rules
   useEffect(() => {
@@ -156,13 +158,24 @@ const AddStory = () => {
 
   const validate = () => {
     if (!formData.title.trim()) return "Story title is required";
-    if (!formData.region) return "Please select a region";
+    if (!formData.region) return "Please select a province";
+    if (!REGIONS.includes(formData.region)) return "Please select a valid province";
     if (!formData.category) return "Please select a category";
     if (!formData.language) return "Please select a language";
     if (!formData.content.trim()) return "Story content is required";
     if (formData.content.trim().length < 50)
       return "Story content must be at least 50 characters";
     return null;
+  };
+
+  const filteredProvinces = REGIONS.filter((province) =>
+    province.toLowerCase().includes(provinceSearch.toLowerCase())
+  );
+
+  const handleProvinceSelect = (province) => {
+    setFormData((prev) => ({ ...prev, region: province }));
+    setProvinceSearch("");
+    setShowProvinceDropdown(false);
   };
 
   const handleSubmit = async (e) => {
@@ -363,30 +376,47 @@ const AddStory = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-text-secondary">
-                  Region <span className="text-red-400">*</span>
+                  Province <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2">
                     <MapPin className="w-5 h-5 text-text-secondary" />
                   </div>
-                  <select
-                    value={formData.region}
-                    onChange={(e) => handleChange("region", e.target.value)}
-                    className="w-full bg-card-background border border-border rounded-lg px-4 py-3 pl-12 text-text-primary focus:outline-none focus:border-primary-accent transition-all duration-300 appearance-none cursor-pointer"
-                  >
-                    <option value="" className="bg-background-secondary">
-                      Select a region
-                    </option>
-                    {REGIONS.map((r) => (
-                      <option
-                        key={r}
-                        value={r}
-                        className="bg-background-secondary"
-                      >
-                        {r}
-                      </option>
-                    ))}
-                  </select>
+                  <input
+                    type="text"
+                    value={formData.region || provinceSearch}
+                    onChange={(e) => {
+                      setProvinceSearch(e.target.value);
+                      setShowProvinceDropdown(true);
+                      if (!e.target.value) {
+                        handleChange("region", "");
+                      }
+                    }}
+                    onFocus={() => setShowProvinceDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowProvinceDropdown(false), 200)}
+                    placeholder="Search province..."
+                    className="w-full bg-card-background border border-border rounded-lg px-4 py-3 pl-12 text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary-accent transition-all duration-300"
+                  />
+                  {showProvinceDropdown && (
+                    <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                      {filteredProvinces.length > 0 ? (
+                        filteredProvinces.map((province) => (
+                          <button
+                            key={province}
+                            type="button"
+                            onClick={() => handleProvinceSelect(province)}
+                            className="w-full px-4 py-2 text-left text-text-primary hover:bg-background-secondary hover:text-primary-accent transition-colors"
+                          >
+                            {province}
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-text-secondary">
+                          No provinces found
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="space-y-2">
