@@ -63,6 +63,7 @@ const AddStory = () => {
   const [visibleStoryCount, setVisibleStoryCount] = useState(5);
   const [provinceSearch, setProvinceSearch] = useState("");
   const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   // Check if user has accepted rules
   useEffect(() => {
@@ -173,9 +174,64 @@ const AddStory = () => {
   );
 
   const handleProvinceSelect = (province) => {
+    setProvinceSearch(province);
     setFormData((prev) => ({ ...prev, region: province }));
-    setProvinceSearch("");
     setShowProvinceDropdown(false);
+    setHighlightedIndex(-1);
+  };
+
+  const handleProvinceInputChange = (e) => {
+    const value = e.target.value;
+    setProvinceSearch(value);
+    setShowProvinceDropdown(true);
+    setHighlightedIndex(-1);
+    if (!value) {
+      handleChange("region", "");
+    }
+  };
+
+  const handleProvinceKeyDown = (e) => {
+    if (!showProvinceDropdown || filteredProvinces.length === 0) {
+      if (e.key === "Escape") {
+        setShowProvinceDropdown(false);
+        setHighlightedIndex(-1);
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev < filteredProvinces.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (highlightedIndex >= 0 && filteredProvinces[highlightedIndex]) {
+          handleProvinceSelect(filteredProvinces[highlightedIndex]);
+        } else if (filteredProvinces.length > 0) {
+          handleProvinceSelect(filteredProvinces[0]);
+        }
+        break;
+      case "Tab":
+        if (highlightedIndex >= 0 && filteredProvinces[highlightedIndex]) {
+          e.preventDefault();
+          handleProvinceSelect(filteredProvinces[highlightedIndex]);
+        } else if (filteredProvinces.length > 0) {
+          e.preventDefault();
+          handleProvinceSelect(filteredProvinces[0]);
+        }
+        break;
+      case "Escape":
+        setShowProvinceDropdown(false);
+        setHighlightedIndex(-1);
+        break;
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -213,6 +269,7 @@ const AddStory = () => {
       }
 
       setFormData(emptyForm);
+      setProvinceSearch("");
       setCoverPreview("");
       setImageFile(null);
       fetchMyStories();
@@ -237,6 +294,7 @@ const AddStory = () => {
       coverImage: story.image || "",
       content: story.content,
     });
+    setProvinceSearch(story.region || "");
     // If story has an image, show it as preview (prepend API base if relative)
     if (story.image) {
       setCoverPreview(story.image.startsWith("/") ? story.image : story.image);
@@ -268,6 +326,7 @@ const AddStory = () => {
 
   const handleCancelEdit = () => {
     setFormData(emptyForm);
+    setProvinceSearch("");
     setCoverPreview("");
     setEditingId(null);
     setImageFile(null);
@@ -384,28 +443,28 @@ const AddStory = () => {
                   </div>
                   <input
                     type="text"
-                    value={formData.region || provinceSearch}
-                    onChange={(e) => {
-                      setProvinceSearch(e.target.value);
-                      setShowProvinceDropdown(true);
-                      if (!e.target.value) {
-                        handleChange("region", "");
-                      }
-                    }}
+                    value={provinceSearch}
+                    onChange={handleProvinceInputChange}
                     onFocus={() => setShowProvinceDropdown(true)}
                     onBlur={() => setTimeout(() => setShowProvinceDropdown(false), 200)}
+                    onKeyDown={handleProvinceKeyDown}
                     placeholder="Search province..."
                     className="w-full bg-card-background border border-border rounded-lg px-4 py-3 pl-12 text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary-accent transition-all duration-300"
                   />
                   {showProvinceDropdown && (
                     <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-lg shadow-xl max-h-60 overflow-y-auto">
                       {filteredProvinces.length > 0 ? (
-                        filteredProvinces.map((province) => (
+                        filteredProvinces.map((province, index) => (
                           <button
                             key={province}
                             type="button"
                             onClick={() => handleProvinceSelect(province)}
-                            className="w-full px-4 py-2 text-left text-text-primary hover:bg-background-secondary hover:text-primary-accent transition-colors"
+                            onDoubleClick={() => handleProvinceSelect(province)}
+                            className={`w-full px-4 py-2 text-left transition-colors ${
+                              index === highlightedIndex
+                                ? "bg-primary-accent text-background"
+                                : "text-text-primary hover:bg-background-secondary hover:text-primary-accent"
+                            }`}
                           >
                             {province}
                           </button>
