@@ -66,13 +66,10 @@ const AddStory = () => {
   const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
-  // Check if user has accepted rules
+  // Show reminder modal every time the Add Story page mounts
   useEffect(() => {
-    if (user && !user.acceptedRules) {
-      // Only show reminder modal if user hasn't accepted rules
-      setShowReminderModal(true);
-    }
-  }, [user]);
+    setShowReminderModal(true);
+  }, []);
 
   // Load user's stories from API
   const fetchMyStories = async () => {
