@@ -26,6 +26,7 @@ const formatUser = (user) => ({
   email: user.email,
   acceptedRules: user.acceptedRules,
   isEmailVerified: user.isEmailVerified,
+  savedStories: user.savedStories || [],
 });
 
 const assignVerificationCode = async (user) => {
