@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Info, X, Globe, Check } from "lucide-react";
 import Button from "./Button";
@@ -25,35 +25,36 @@ const translations = {
   },
 };
 
-const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState("English");
+const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel, selectedLanguage, onLanguageChange }) => {
   const currentTranslation = translations[selectedLanguage];
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        className="fixed inset-0 z-[100] overflow-y-auto"
       >
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-          onClick={onCancel}
-        />
+        {/* Center Wrapper */}
+        <div className="min-h-screen flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={onCancel}
+          />
 
-        {/* Modal Content */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative z-10 w-full max-w-md rounded-2xl p-6 md:p-8 shadow-xl bg-card-background border border-border dark:border-border/50"
-        >
+          {/* Modal Content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-6 md:p-8 shadow-xl bg-card-background border border-border dark:border-border/50 scrollbar-thin"
+          >
           {/* Close Button */}
           <button
             onClick={onCancel}
@@ -69,7 +70,7 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel }) => {
               {["English", "فارسی", "پشتو"].map((lang) => (
                 <button
                   key={lang}
-                  onClick={() => setSelectedLanguage(lang)}
+                  onClick={() => onLanguageChange(lang)}
                   className={`flex items-center space-x-2 px-3 py-1.5 rounded-md transition-all ${
                     selectedLanguage === lang
                       ? "bg-primary-accent text-background"
@@ -121,8 +122,10 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel }) => {
             </Button>
           </div>
         </motion.div>
+        </div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

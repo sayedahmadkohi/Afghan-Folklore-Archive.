@@ -51,6 +51,7 @@ const AddStory = () => {
   const navigate = useNavigate();
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [showReminderModal, setShowReminderModal] = useState(false);
+  const [rulesLanguage, setRulesLanguage] = useState("English");
   const [formData, setFormData] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -68,13 +69,8 @@ const AddStory = () => {
   // Check if user has accepted rules
   useEffect(() => {
     if (user) {
-      if (!user.acceptedRules) {
-        // First time: show full guidelines modal
-        setShowRulesModal(true);
-      } else {
-        // Subsequent visits: show reminder modal
-        setShowReminderModal(true);
-      }
+      // All users see reminder modal first
+      setShowReminderModal(true);
     }
   }, [user]);
 
@@ -106,7 +102,8 @@ const AddStory = () => {
   };
 
   const handleCancelRules = () => {
-    navigate("/");
+    setShowRulesModal(false);
+    setShowReminderModal(true);
   };
 
   const handleReminderContinue = () => {
@@ -116,18 +113,6 @@ const AddStory = () => {
   const handleReminderViewFull = () => {
     setShowReminderModal(false);
     setShowRulesModal(true);
-  };
-
-  const handleAcceptRulesFromReminder = async () => {
-    try {
-      await authAPI.acceptRules();
-      const updatedUser = { ...user, acceptedRules: true };
-      updateUser(updatedUser);
-      setShowRulesModal(false);
-      // Reminder modal is already closed at this point
-    } catch (err) {
-      setError("Failed to accept rules. Please try again.");
-    }
   };
 
   const handleReminderCancel = () => {
@@ -344,23 +329,6 @@ const AddStory = () => {
 
   return (
     <>
-      {/* Community Rules Modal */}
-      {showRulesModal && (
-        <CommunityRulesModal
-          onAccept={handleAcceptRulesFromReminder}
-          onCancel={handleCancelRules}
-        />
-      )}
-
-      {/* Guidelines Reminder Modal */}
-      {showReminderModal && (
-        <GuidelinesReminderModal
-          onContinue={handleReminderContinue}
-          onViewFull={handleReminderViewFull}
-          onCancel={handleReminderCancel}
-        />
-      )}
-
       <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-4xl mx-auto space-y-12">
         {/* Header */}
@@ -808,7 +776,28 @@ const AddStory = () => {
           )}
         </motion.div>
       </div>
-    </div>
+      </div>
+
+      {/* Community Rules Modal */}
+      {showRulesModal && (
+        <CommunityRulesModal
+          onAccept={handleAcceptRules}
+          onCancel={handleCancelRules}
+          selectedLanguage={rulesLanguage}
+          onLanguageChange={setRulesLanguage}
+        />
+      )}
+
+      {/* Guidelines Reminder Modal */}
+      {showReminderModal && (
+        <GuidelinesReminderModal
+          onContinue={handleReminderContinue}
+          onViewFull={handleReminderViewFull}
+          onCancel={handleReminderCancel}
+          selectedLanguage={rulesLanguage}
+          onLanguageChange={setRulesLanguage}
+        />
+      )}
     </>
   );
 };

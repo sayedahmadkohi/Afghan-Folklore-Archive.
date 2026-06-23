@@ -1,5 +1,5 @@
 // قوانین انجمن را در اینجا میسازه
-import { useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Heart, Ban, BookOpen, AlertTriangle, X, Globe } from "lucide-react";
 import Button from "./Button";
@@ -123,35 +123,36 @@ const translations = {
 };
 
 // تعریف قوانین
-const CommunityRulesModal = ({ onAccept, onCancel }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState("English");
+const CommunityRulesModal = ({ onAccept, onCancel, selectedLanguage, onLanguageChange }) => {
   const currentTranslation = translations[selectedLanguage];
   // ساختار اصلی مودال
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        className="fixed inset-0 z-[100] overflow-y-auto"
       >
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-          onClick={onCancel}
-        />
+        {/* Center Wrapper */}
+        <div className="min-h-screen flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={onCancel}
+          />
 
-        {/* Modal Content */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative z-10 w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-xl bg-card-background border border-border dark:border-border/50"
-        >
+          {/* Modal Content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 md:p-8 shadow-xl bg-card-background border border-border dark:border-border/50 scrollbar-thin"
+          >
           {/* Close Button */}
           <button
             onClick={onCancel}
@@ -167,7 +168,7 @@ const CommunityRulesModal = ({ onAccept, onCancel }) => {
               {["English", "فارسی", "پشتو"].map((lang) => (
                 <button
                   key={lang}
-                  onClick={() => setSelectedLanguage(lang)}
+                  onClick={() => onLanguageChange(lang)}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all ${
                     selectedLanguage === lang
                       ? "bg-primary-accent text-background"
@@ -239,8 +240,10 @@ const CommunityRulesModal = ({ onAccept, onCancel }) => {
             </Button>
           </div>
         </motion.div>
+        </div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 
