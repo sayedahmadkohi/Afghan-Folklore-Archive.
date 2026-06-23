@@ -1,6 +1,6 @@
 // قوانین انجمن را در اینجا میسازه
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Shield, Heart, Ban, BookOpen, AlertTriangle, X, Globe } from "lucide-react";
 import Button from "./Button";
 
@@ -127,11 +127,9 @@ const CommunityRulesModal = ({ onAccept, onCancel, selectedLanguage, onLanguageC
   const currentTranslation = translations[selectedLanguage];
   // ساختار اصلی مودال
   return createPortal(
-    <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={{ opacity: 1 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
         className="fixed inset-0 z-[100] overflow-y-auto"
       >
         {/* Center Wrapper */}
@@ -151,7 +149,7 @@ const CommunityRulesModal = ({ onAccept, onCancel, selectedLanguage, onLanguageC
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 md:p-8 shadow-xl bg-card-background border border-border dark:border-border/50 scrollbar-thin"
+            className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 md:p-8 shadow-2xl bg-card-background border-2 border-border dark:border-border/60 scrollbar-minimal"
           >
           {/* Close Button */}
           <button
@@ -193,33 +191,33 @@ const CommunityRulesModal = ({ onAccept, onCancel, selectedLanguage, onLanguageC
                 damping: 15,
                 delay: 0.1,
               }}
-              className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-accent to-secondary-accent flex items-center justify-center mx-auto mb-4"
+              className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-accent to-secondary-accent flex items-center justify-center mx-auto mb-5 shadow-lg"
             >
-              <Shield className="w-8 h-8 text-background" />
+              <Shield className="w-10 h-10 text-background" />
             </motion.div>
             <h2 className="text-2xl md:text-3xl font-bold text-text-primary">
               {currentTranslation.title}
             </h2>
-            <p className="text-text-secondary mt-2">
+            <p className="text-text-secondary mt-3 text-base">
               {currentTranslation.description}
             </p>
           </div>
 
           {/* Rules */}
-          <div className="space-y-4 mb-8">
+          <div className="space-y-3 mb-8">
             {currentTranslation.rules.map((rule, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 + index * 0.1 }}
-                className="flex items-start space-x-4 p-4 rounded-xl bg-background-secondary border border-border dark:border-border/50"
+                className="flex items-start space-x-4 p-4 rounded-xl bg-background-secondary/80 border border-border dark:border-border/50 hover:bg-background-secondary transition-colors"
               >
-                <div className="w-10 h-10 rounded-lg bg-primary-accent/10 flex items-center justify-center flex-shrink-0">
-                  <rule.icon className="w-5 h-5 text-primary-accent" />
+                <div className="w-11 h-11 rounded-lg bg-primary-accent/15 flex items-center justify-center flex-shrink-0">
+                  <rule.icon className="w-5.5 h-5.5 text-primary-accent" />
                 </div>
                 <div>
-                  <h3 className="text-text-primary font-semibold mb-1">
+                  <h3 className="text-text-primary font-semibold mb-1.5 text-base">
                     {rule.title}
                   </h3>
                   <p className="text-text-secondary text-sm leading-relaxed">
@@ -242,7 +240,7 @@ const CommunityRulesModal = ({ onAccept, onCancel, selectedLanguage, onLanguageC
         </motion.div>
         </div>
       </motion.div>
-    </AnimatePresence>,
+    ,
     document.body
   );
 };

@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("afa_token");
-    if (token && isAuthenticated) {
+    if (token) {
       authAPI
         .getMe()
         .then((res) => {

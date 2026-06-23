@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Shield, Info, X, Globe, Check } from "lucide-react";
 import Button from "./Button";
 
@@ -29,11 +29,9 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel, selectedLan
   const currentTranslation = translations[selectedLanguage];
 
   return createPortal(
-    <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={{ opacity: 1 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
         className="fixed inset-0 z-[100] overflow-y-auto"
       >
         {/* Center Wrapper */}
@@ -53,7 +51,7 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel, selectedLan
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-6 md:p-8 shadow-xl bg-card-background border border-border dark:border-border/50 scrollbar-thin"
+            className="relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-5 md:p-6 shadow-lg bg-card-background border border-border dark:border-border/50 scrollbar-minimal"
           >
           {/* Close Button */}
           <button
@@ -64,20 +62,20 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel, selectedLan
           </button>
 
           {/* Language Selector */}
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center space-x-2 rounded-lg p-1 bg-background-secondary border border-border dark:border-border/50"
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center space-x-1.5 rounded-md p-0.5 bg-background-secondary/50 border border-border dark:border-border/30"
             >
               {["English", "فارسی", "پشتو"].map((lang) => (
                 <button
                   key={lang}
                   onClick={() => onLanguageChange(lang)}
-                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-md transition-all ${
+                  className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-sm transition-all ${
                     selectedLanguage === lang
                       ? "bg-primary-accent text-background"
-                      : "text-text-secondary hover:text-text-primary hover:bg-background/50"
+                      : "text-text-secondary hover:text-text-primary hover:bg-background/30"
                   }`}
                 >
-                  <Globe className="w-3.5 h-3.5" />
+                  <Globe className="w-3 h-3" />
                   <span className="text-xs font-medium">{lang}</span>
                 </button>
               ))}
@@ -85,7 +83,7 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel, selectedLan
           </div>
 
           {/* Header */}
-          <div className="text-center mb-6">
+          <div className="text-center mb-4">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -95,36 +93,36 @@ const GuidelinesReminderModal = ({ onContinue, onViewFull, onCancel, selectedLan
                 damping: 15,
                 delay: 0.1,
               }}
-              className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-accent to-secondary-accent flex items-center justify-center mx-auto mb-4"
+              className="w-12 h-12 rounded-full bg-primary-accent/10 flex items-center justify-center mx-auto mb-3"
             >
-              <Info className="w-7 h-7 text-background" />
+              <Info className="w-5 h-5 text-primary-accent" />
             </motion.div>
-            <h2 className="text-xl md:text-2xl font-bold text-text-primary">
+            <h2 className="text-lg md:text-xl font-semibold text-text-primary">
               {currentTranslation.title}
             </h2>
-            <p className="text-text-secondary mt-2 text-sm">
+            <p className="text-text-secondary mt-1.5 text-xs">
               {currentTranslation.message}
             </p>
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             <Button
               variant="secondary"
               onClick={onViewFull}
-              className="flex-1"
+              className="flex-1 text-sm"
             >
               {currentTranslation.viewFull}
             </Button>
-            <Button onClick={onContinue} className="flex-1">
-              <Check className="w-4 h-4 mr-2" />
+            <Button onClick={onContinue} className="flex-1 text-sm">
+              <Check className="w-3.5 h-3.5 mr-1.5" />
               {currentTranslation.continue}
             </Button>
           </div>
         </motion.div>
         </div>
       </motion.div>
-    </AnimatePresence>,
+    ,
     document.body
   );
 };
