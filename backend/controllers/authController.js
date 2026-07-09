@@ -27,6 +27,7 @@ const formatUser = (user) => ({
   acceptedRules: user.acceptedRules,
   isEmailVerified: user.isEmailVerified,
   savedStories: user.savedStories || [],
+  role: user.role || "user",
 });
 
 const assignVerificationCode = async (user) => {
@@ -433,6 +434,100 @@ export const updateProfile = async (req, res, next) => {
     }
 
     res.json(formatUser(user));
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/admin/stats
+export const getAdminStats = async (req, res, next) => {
+  try {
+    const totalStories = await StoryModel.countDocuments();
+    const totalUsers = await User.countDocuments();
+    
+    const stories = await StoryModel.find();
+    const totalViews = stories.reduce((sum, story) => sum + (story.views || 0), 0);
+    
+    const users = await User.find();
+    const totalBookmarks = users.reduce((sum, user) => sum + (user.savedStories?.length || 0), 0);
+
+    res.json({
+      totalStories,
+      totalUsers,
+      totalViews,
+      totalBookmarks,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/admin/stories
+export const getAllStoriesAdmin = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search || "";
+
+    const query = {};
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const totalItems = await StoryModel.countDocuments(query);
+    const stories = await StoryModel.find(query)
+      .populate("author", "fullName email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    res.json({
+      stories,
+      currentPage: page,
+      totalPages,
+      totalItems,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/admin/users
+export const getAllUsersAdmin = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search || "";
+
+    const query = {};
+    if (search) {
+      query.$or = [
+        { fullName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const totalItems = await User.countDocuments(query);
+    const users = await User.find(query)
+      .select("-password -emailVerificationToken -emailVerificationExpires -passwordResetToken -passwordResetExpires")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    res.json({
+      users,
+      currentPage: page,
+      totalPages,
+      totalItems,
+    });
   } catch (error) {
     next(error);
   }
