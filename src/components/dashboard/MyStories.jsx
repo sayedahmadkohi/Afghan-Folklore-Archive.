@@ -1,0 +1,173 @@
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FileText,
+  MapPin,
+  Edit3,
+  Trash2,
+  Loader2,
+} from "lucide-react";
+import { storiesAPI } from "../../services/api";
+
+const MyStories = ({ onEdit }) => {
+  const [myStories, setMyStories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+
+  const fetchMyStories = async () => {
+    try {
+      setIsLoading(true);
+      const res = await storiesAPI.getMy();
+      setMyStories(res.data);
+    } catch (err) {
+      console.error("Failed to fetch stories", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMyStories();
+  }, []);
+
+  const handleDelete = async (storyId) => {
+    try {
+      await storiesAPI.delete(storyId);
+      setDeleteConfirmId(null);
+      fetchMyStories();
+    } catch (err) {
+      console.error("Failed to delete story", err);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-10 h-10 text-primary-accent animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-2"
+      >
+        <h1 className="text-3xl font-bold text-text-primary">My Stories</h1>
+        <p className="text-text-secondary">
+          Manage and edit your contributed stories
+        </p>
+      </motion.div>
+
+      {/* Stories List */}
+      {myStories.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass rounded-2xl p-12 text-center space-y-4"
+        >
+          <FileText className="w-16 h-16 text-text-secondary mx-auto" />
+          <h3 className="text-xl font-bold text-text-primary">No Stories Yet</h3>
+          <p className="text-text-secondary">
+            Navigate to Add Story to submit your first story
+          </p>
+        </motion.div>
+      ) : (
+        <div className="space-y-4">
+          {myStories.map((story, index) => (
+            <motion.div
+              key={story._id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="glass rounded-xl p-5 hover:border-primary-accent/30 transition-colors"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex-1 space-y-2">
+                  <h3 className="text-lg font-bold text-text-primary">
+                    {story.title}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
+                    <span className="px-3 py-1 rounded-full bg-primary-accent/10 text-primary-accent text-xs font-medium">
+                      {story.category}
+                    </span>
+                    <div className="flex items-center space-x-1.5">
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>{story.region}</span>
+                    </div>
+                    <span className="text-xs">
+                      {new Date(story.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => onEdit(story._id)}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-sm"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                    <span>Edit</span>
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setDeleteConfirmId(story._id)}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors text-sm"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Delete</span>
+                  </motion.button>
+                </div>
+              </div>
+              <AnimatePresence>
+                {deleteConfirmId === story._id && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-4 pt-4 border-t border-border"
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="text-text-secondary text-sm">
+                        Are you sure you want to delete{" "}
+                        <span className="text-text-primary font-medium">
+                          "{story.title}"
+                        </span>
+                        ?
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setDeleteConfirmId(null)}
+                          className="px-3 py-1.5 rounded-lg text-sm text-text-secondary hover:text-text-primary transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleDelete(story._id)}
+                          className="px-3 py-1.5 rounded-lg text-sm bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MyStories;

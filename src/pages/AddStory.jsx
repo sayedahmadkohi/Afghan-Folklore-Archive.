@@ -46,14 +46,14 @@ const emptyForm = {
   content: "",
 };
 
-const AddStory = () => {
+const AddStory = ({ editingStoryId: propEditingId, onClearEdit }) => {
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [showReminderModal, setShowReminderModal] = useState(false);
   const [rulesLanguage, setRulesLanguage] = useState("English");
   const [formData, setFormData] = useState(emptyForm);
-  const [editingId, setEditingId] = useState(null);
+  const [editingId, setEditingId] = useState(propEditingId || null);
   const [imageFile, setImageFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState("");
   const [error, setError] = useState("");
@@ -65,11 +65,14 @@ const AddStory = () => {
   const [provinceSearch, setProvinceSearch] = useState("");
   const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const isInsideDashboard = !!propEditingId || !!onClearEdit;
 
-  // Show reminder modal every time the Add Story page mounts
+  // Show reminder modal every time the Add Story page mounts (skip if in dashboard)
   useEffect(() => {
-    setShowReminderModal(true);
-  }, []);
+    if (!isInsideDashboard) {
+      setShowReminderModal(true);
+    }
+  }, [isInsideDashboard]);
 
   // Load user's stories from API
   const fetchMyStories = async () => {
@@ -82,10 +85,45 @@ const AddStory = () => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && !isInsideDashboard) {
       fetchMyStories();
     }
-  }, [user]);
+  }, [user, isInsideDashboard]);
+
+  // Load story for editing when propEditingId changes
+  useEffect(() => {
+    if (propEditingId && propEditingId !== editingId) {
+      const loadStoryForEdit = async () => {
+        try {
+          const res = await storiesAPI.getOne(propEditingId);
+          const story = res.data;
+          setFormData({
+            title: story.title,
+            region: story.region,
+            category: story.category,
+            language: story.language || "",
+            tags: story.tags || "",
+            coverImage: story.image || "",
+            content: story.content,
+          });
+          setProvinceSearch(story.region || "");
+          if (story.image) {
+            setCoverPreview(story.image.startsWith("/") ? story.image : story.image);
+          } else {
+            setCoverPreview("");
+          }
+          setEditingId(propEditingId);
+          setImageFile(null);
+          setError("");
+          setSuccess("");
+        } catch (err) {
+          console.error("Failed to load story for editing", err);
+          setError("Failed to load story for editing");
+        }
+      };
+      loadStoryForEdit();
+    }
+  }, [propEditingId]);
 
   const handleAcceptRules = async () => {
     try {
@@ -254,7 +292,12 @@ const AddStory = () => {
       setProvinceSearch("");
       setCoverPreview("");
       setImageFile(null);
-      fetchMyStories();
+      if (!isInsideDashboard) {
+        fetchMyStories();
+      }
+      if (onClearEdit) {
+        onClearEdit();
+      }
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       const message =
@@ -314,6 +357,9 @@ const AddStory = () => {
     setImageFile(null);
     setError("");
     setSuccess("");
+    if (onClearEdit) {
+      onClearEdit();
+    }
   };
 
   const contentLength = formData.content.length;
@@ -639,139 +685,141 @@ const AddStory = () => {
           </form>
         </motion.div>
 
-        {/* My Stories Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-6"
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl md:text-3xl font-bold text-text-primary">
-              My Stories
-            </h2>
-            <span className="text-text-secondary text-sm">
-              {myStories.length} {myStories.length === 1 ? "story" : "stories"}
-            </span>
-          </div>
-
-          {myStories.length === 0 ? (
-            <div className="glass rounded-2xl p-12 text-center space-y-4">
-              <FileText className="w-16 h-16 text-text-secondary mx-auto" />
-              <h3 className="text-xl font-bold text-text-primary">
-                No Stories Yet
-              </h3>
-              <p className="text-text-secondary">
-                Submit your first story using the form above to see it here.
-              </p>
+        {/* My Stories Section - Only show if not in dashboard */}
+        {!isInsideDashboard && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="space-y-6"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl md:text-3xl font-bold text-text-primary">
+                My Stories
+              </h2>
+              <span className="text-text-secondary text-sm">
+                {myStories.length} {myStories.length === 1 ? "story" : "stories"}
+              </span>
             </div>
-          ) : (
-            <>
-              <div className="space-y-4">
-                {myStories.slice(0, visibleStoryCount).map((story, index) => (
-                  <motion.div
-                    key={story._id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="glass rounded-xl p-5 md:p-6"
-                  >
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex-1 space-y-2">
-                        <h3 className="text-lg font-bold text-text-primary">
-                          {index + 1}. {story.title}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
-                          <span className="px-3 py-1 rounded-full bg-primary-accent/10 text-primary-accent text-xs font-medium">
-                            {story.category}
-                          </span>
-                          <div className="flex items-center space-x-1.5">
-                            <MapPin className="w-3.5 h-3.5" />
-                            <span>{story.region}</span>
+
+            {myStories.length === 0 ? (
+              <div className="glass rounded-2xl p-12 text-center space-y-4">
+                <FileText className="w-16 h-16 text-text-secondary mx-auto" />
+                <h3 className="text-xl font-bold text-text-primary">
+                  No Stories Yet
+                </h3>
+                <p className="text-text-secondary">
+                  Submit your first story using the form above to see it here.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  {myStories.slice(0, visibleStoryCount).map((story, index) => (
+                    <motion.div
+                      key={story._id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="glass rounded-xl p-5 md:p-6"
+                    >
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex-1 space-y-2">
+                          <h3 className="text-lg font-bold text-text-primary">
+                            {index + 1}. {story.title}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
+                            <span className="px-3 py-1 rounded-full bg-primary-accent/10 text-primary-accent text-xs font-medium">
+                              {story.category}
+                            </span>
+                            <div className="flex items-center space-x-1.5">
+                              <MapPin className="w-3.5 h-3.5" />
+                              <span>{story.region}</span>
+                            </div>
+                            <span className="text-xs">
+                              {new Date(story.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                },
+                              )}
+                            </span>
                           </div>
-                          <span className="text-xs">
-                            {new Date(story.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              },
-                            )}
-                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleEdit(story)}
+                            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-sm"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                            <span>Edit</span>
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setDeleteConfirmId(story._id)}
+                            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors text-sm"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            <span>Delete</span>
+                          </motion.button>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleEdit(story)}
-                          className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-sm"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                          <span>Edit</span>
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => setDeleteConfirmId(story._id)}
-                          className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors text-sm"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          <span>Delete</span>
-                        </motion.button>
-                      </div>
-                    </div>
-                    <AnimatePresence>
-                      {deleteConfirmId === story._id && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="mt-4 pt-4 border-t border-border"
-                        >
-                          <div className="flex items-center justify-between">
-                            <p className="text-text-secondary text-sm">
-                              Are you sure you want to delete{" "}
-                              <span className="text-text-primary font-medium">
-                                "{story.title}"
-                              </span>
-                              ?
-                            </p>
-                            <div className="flex items-center space-x-2">
-                              <button
-                                onClick={() => setDeleteConfirmId(null)}
-                                className="px-3 py-1.5 rounded-lg text-sm text-text-secondary hover:text-text-primary transition-colors"
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                onClick={() => handleDelete(story._id)}
-                                className="px-3 py-1.5 rounded-lg text-sm bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
-                              >
-                                Delete
-                              </button>
+                      <AnimatePresence>
+                        {deleteConfirmId === story._id && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mt-4 pt-4 border-t border-border"
+                          >
+                            <div className="flex items-center justify-between">
+                              <p className="text-text-secondary text-sm">
+                                Are you sure you want to delete{" "}
+                                <span className="text-text-primary font-medium">
+                                  "{story.title}"
+                                </span>
+                                ?
+                              </p>
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  onClick={() => setDeleteConfirmId(null)}
+                                  className="px-3 py-1.5 rounded-lg text-sm text-text-secondary hover:text-text-primary transition-colors"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(story._id)}
+                                  className="px-3 py-1.5 rounded-lg text-sm bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                                >
+                                  Delete
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                ))}
-              </div>
-              {myStories.length > visibleStoryCount && (
-                <div className="text-center pt-4">
-                  <button
-                    onClick={() => setVisibleStoryCount(prev => prev + 5)}
-                    className="px-6 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-sm font-medium"
-                  >
-                    See More
-                  </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  ))}
                 </div>
-              )}
-            </>
-          )}
-        </motion.div>
+                {myStories.length > visibleStoryCount && (
+                  <div className="text-center pt-4">
+                    <button
+                      onClick={() => setVisibleStoryCount(prev => prev + 5)}
+                      className="px-6 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-sm font-medium"
+                    >
+                      See More
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </motion.div>
+        )}
       </div>
       </div>
 

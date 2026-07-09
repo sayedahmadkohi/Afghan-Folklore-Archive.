@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen,
-  Plus,
   Moon,
   Sun,
   Menu,
@@ -11,7 +10,8 @@ import {
   LogOut,
   LogIn,
   UserPlus,
-  Bookmark,
+  LayoutDashboard,
+  Home,
 } from "lucide-react"; // آیکن های بالا را از اینجا وارد کردیم
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
@@ -42,13 +42,9 @@ const Navbar = () => {
 
   // بخش پنجم : لینک تاوبری داینامیک
   const navLinks = [
-    { name: "Explore Stories", path: "/explore", icon: BookOpen },
-    ...(isAuthenticated
-      ? [
-          { name: "Saved Stories", path: "/saved", icon: Bookmark },
-          { name: "Add Story", path: "/add-story", icon: Plus },
-        ]
-      : []),
+    { name: "Home", path: "/", icon: Home },
+    { name: "Explore", path: "/explore", icon: BookOpen },
+    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
   ];
   // بخش ششم نوار ناوبری اصلی
   return (
@@ -128,42 +124,6 @@ const Navbar = () => {
                 )}
               </AnimatePresence>
             </motion.button>
-
-            {/* Auth Buttons */}
-            {isAuthenticated ? (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleLogout}
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Logout</span>
-              </motion.button>
-            ) : (
-              <div className="flex items-center space-x-3">
-                <Link to="/login">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors"
-                  >
-                    <LogIn className="w-4 h-4" />
-                    <span>Login</span>
-                  </motion.button>
-                </Link>
-                <Link to="/register">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-primary-accent to-secondary-accent text-background font-medium"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    <span>Register</span>
-                  </motion.button>
-                </Link>
-              </div>
-            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -215,35 +175,6 @@ const Navbar = () => {
                   <span className="text-lg">{link.name}</span>
                 </Link>
               ))}
-
-              {isAuthenticated ? (
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-3 text-text-secondary hover:text-text-primary transition-colors py-2 w-full"
-                >
-                  <LogOut className="w-5 h-5" />
-                  <span className="text-lg">Logout</span>
-                </button>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 text-text-secondary hover:text-text-primary transition-colors py-2"
-                  >
-                    <LogIn className="w-5 h-5" />
-                    <span className="text-lg">Login</span>
-                  </Link>
-                  <Link
-                    to="/register"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 text-text-secondary hover:text-text-primary transition-colors py-2"
-                  >
-                    <UserPlus className="w-5 h-5" />
-                    <span className="text-lg">Register</span>
-                  </Link>
-                </>
-              )}
             </div>
           </motion.div>
         )}
