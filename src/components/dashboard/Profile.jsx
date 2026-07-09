@@ -12,13 +12,26 @@ import { useAuth } from "../../context/AuthContext";
 import { authAPI } from "../../services/api";
 import Button from "../Button";
 
+const mapUser = (userData) => ({
+  id: userData.id || userData._id,
+  name: userData.fullName,
+  email: userData.email,
+  acceptedRules: userData.acceptedRules,
+  isEmailVerified: userData.isEmailVerified,
+  savedStories: userData.savedStories || [],
+});
+
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+  });
+  const [usernameData, setUsernameData] = useState({
+    fullName: user?.name || "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -29,13 +42,13 @@ const Profile = () => {
     setError("");
     setSuccess("");
 
-    if (!passwordData.currentPassword || !passwordData.newPassword) {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
       setError("Please fill in all password fields");
       return;
     }
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setError("New passwords do not match");
+      setError("New password and confirmation password do not match.");
       return;
     }
 
@@ -50,12 +63,13 @@ const Profile = () => {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
-      setSuccess("Password changed successfully!");
+      setSuccess("Password changed successfully.");
       setPasswordData({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
+      setIsChangingPassword(false);
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       const message =
@@ -65,6 +79,42 @@ const Profile = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleUsernameUpdate = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!usernameData.fullName || !usernameData.fullName.trim()) {
+      setError("Please provide a valid username");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await authAPI.updateProfile({
+        fullName: usernameData.fullName.trim(),
+      });
+      const updatedUser = mapUser(res.data);
+      updateUser(updatedUser);
+      setSuccess("Username updated successfully.");
+      setIsEditingUsername(false);
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        "Failed to update username. Please try again.";
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelUsernameEdit = () => {
+    setUsernameData({ fullName: user?.name || "" });
+    setIsEditingUsername(false);
+    setError("");
   };
 
   return (
@@ -100,13 +150,52 @@ const Profile = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
           <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-text-secondary text-sm">
-              <User className="w-4 h-4" />
-              <span>Username</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-text-secondary text-sm">
+                <User className="w-4 h-4" />
+                <span>Username</span>
+              </div>
+              {!isEditingUsername && (
+                <button
+                  onClick={() => setIsEditingUsername(true)}
+                  className="text-primary-accent text-sm font-medium hover:underline"
+                >
+                  Edit
+                </button>
+              )}
             </div>
-            <p className="text-text-primary font-medium">
-              {user?.name || "N/A"}
-            </p>
+            {isEditingUsername ? (
+              <form onSubmit={handleUsernameUpdate} className="space-y-2">
+                <input
+                  type="text"
+                  value={usernameData.fullName}
+                  onChange={(e) => setUsernameData({ fullName: e.target.value })}
+                  className="w-full bg-card-background border border-border rounded-lg px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-primary-accent transition-all duration-300 text-sm"
+                  placeholder="Enter new username"
+                />
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="px-3 py-1.5 rounded-lg text-sm bg-primary-accent text-background hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    {isLoading ? "Saving..." : "Save"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancelUsernameEdit}
+                    disabled={isLoading}
+                    className="px-3 py-1.5 rounded-lg text-sm text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <p className="text-text-primary font-medium">
+                {user?.name || "N/A"}
+              </p>
+            )}
           </div>
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-text-secondary text-sm">

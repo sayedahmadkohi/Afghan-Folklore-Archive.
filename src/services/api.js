@@ -60,6 +60,7 @@ export const authAPI = {
   toggleSave: (storyId) => api.post(`/auth/toggle-save/${storyId}`),
   getSavedStories: () => api.get("/auth/saved-stories"),
   changePassword: (data) => api.put("/auth/change-password", data),
+  updateProfile: (data) => api.put("/auth/update-profile", data),
 };
 
 // Stories API

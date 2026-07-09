@@ -372,3 +372,68 @@ export const getSavedStories = async (req, res, next) => {
     next(error);
   }
 };
+
+// PUT /api/auth/change-password
+export const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "Please provide current password and new password" });
+    }
+
+    if (newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "New password must be at least 6 characters" });
+    }
+
+    const user = await User.findById(req.user._id).select("+password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ message: "Current password is incorrect." });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: "Password changed successfully." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT /api/auth/update-profile
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { fullName } = req.body;
+
+    if (!fullName || !fullName.trim()) {
+      return res
+        .status(400)
+        .json({ message: "Please provide a valid username" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { fullName: fullName.trim() },
+      { new: true },
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(formatUser(user));
+  } catch (error) {
+    next(error);
+  }
+};

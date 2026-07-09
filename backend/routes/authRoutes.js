@@ -10,6 +10,8 @@ import {
   resetPassword,
   toggleSave,
   getSavedStories,
+  changePassword,
+  updateProfile,
 } from "../controllers/authController.js";
 import protect from "../middleware/auth.js";
 
@@ -25,5 +27,7 @@ router.get("/me", protect, getMe);
 router.put("/accept-rules", protect, acceptRules);
 router.post("/toggle-save/:storyId", protect, toggleSave);
 router.get("/saved-stories", protect, getSavedStories);
+router.put("/change-password", protect, changePassword);
+router.put("/update-profile", protect, updateProfile);
 
 export default router;
