@@ -92,9 +92,10 @@ const AddStory = ({ editingStoryId: propEditingId, onClearEdit }) => {
 
   // Load story for editing when propEditingId changes
   useEffect(() => {
-    if (propEditingId && propEditingId !== editingId) {
+    if (propEditingId) {
       const loadStoryForEdit = async () => {
         try {
+          setIsLoading(true);
           const res = await storiesAPI.getOne(propEditingId);
           const story = res.data;
           setFormData({
@@ -119,6 +120,8 @@ const AddStory = ({ editingStoryId: propEditingId, onClearEdit }) => {
         } catch (err) {
           console.error("Failed to load story for editing", err);
           setError("Failed to load story for editing");
+        } finally {
+          setIsLoading(false);
         }
       };
       loadStoryForEdit();

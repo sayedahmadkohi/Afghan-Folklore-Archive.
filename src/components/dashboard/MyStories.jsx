@@ -16,7 +16,7 @@ const MyStories = ({ onEdit }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const storiesPerPage = 10;
+  const storiesPerPage = 5;
 
   const fetchMyStories = async () => {
     try {
@@ -111,7 +111,7 @@ const MyStories = ({ onEdit }) => {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex-1 space-y-2">
                   <h3 className="text-lg font-bold text-text-primary">
-                    {story.title}
+                    {startIndex + index + 1}. {story.title}
                   </h3>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
                     <span className="px-3 py-1 rounded-full bg-primary-accent/10 text-primary-accent text-xs font-medium">
