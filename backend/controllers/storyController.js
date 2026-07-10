@@ -7,39 +7,95 @@ export const getStories = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 9;
     const skip = (page - 1) * limit;
-    const search = req.query.search || "";
+    const search = (req.query.search || "").trim();
     const category = req.query.category || "";
     const language = req.query.language || "";
 
-    // Build query
-    const query = {};
-
-    // Add search filter (search across title, content, description, tags)
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { content: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { tags: { $regex: search, $options: "i" } },
-      ];
-    }
+    // Build base query for category and language filters
+    const baseQuery = {};
 
     // Add category filter
     if (category && category !== "All") {
-      query.category = category;
+      baseQuery.category = category;
     }
 
     // Add language filter
     if (language && language !== "All") {
-      query.language = language;
+      baseQuery.language = language;
     }
 
-    const totalItems = await StoryModel.countDocuments(query);
-    const stories = await StoryModel.find(query)
-      .populate("author", "fullName email")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+    let stories;
+    let totalItems;
+
+    if (search) {
+      // Search with ranking
+      const searchRegex = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      const startsWithRegex = new RegExp(`^${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
+
+      // Build search query (title, description, tags - NOT content)
+      const searchQuery = {
+        ...baseQuery,
+        $or: [
+          { title: { $regex: searchRegex } },
+          { description: { $regex: searchRegex } },
+          { tags: { $regex: searchRegex } },
+        ],
+      };
+
+      // Get all matching stories for ranking
+      const allMatchingStories = await StoryModel.find(searchQuery)
+        .populate("author", "fullName email");
+
+      // Calculate relevance scores
+      const scoredStories = allMatchingStories.map(story => {
+        let score = 0;
+        const title = (story.title || "").toLowerCase();
+        const description = (story.description || "").toLowerCase();
+        const tags = (story.tags || "").toLowerCase();
+        const searchLower = search.toLowerCase();
+
+        // Priority 1: Title starts with search (highest)
+        if (startsWithRegex.test(story.title || "")) {
+          score += 100;
+        }
+        // Priority 2: Title contains search
+        else if (title.includes(searchLower)) {
+          score += 50;
+        }
+        // Priority 3: Description contains search
+        if (description.includes(searchLower)) {
+          score += 25;
+        }
+        // Priority 4: Tags contain search
+        if (tags.includes(searchLower)) {
+          score += 10;
+        }
+
+        return { ...story.toObject(), _searchScore: score };
+      });
+
+      // Sort by score (descending), then by createdAt (descending)
+      scoredStories.sort((a, b) => {
+        if (b._searchScore !== a._searchScore) {
+          return b._searchScore - a._searchScore;
+        }
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      // Remove the score field before returning
+      const sortedStories = scoredStories.map(({ _searchScore, ...story }) => story);
+
+      totalItems = sortedStories.length;
+      stories = sortedStories.slice(skip, skip + limit);
+    } else {
+      // No search - just apply filters
+      totalItems = await StoryModel.countDocuments(baseQuery);
+      stories = await StoryModel.find(baseQuery)
+        .populate("author", "fullName email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+    }
 
     const totalPages = Math.ceil(totalItems / limit);
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Filter, Grid, List, Loader2 } from "lucide-react";
@@ -14,6 +14,8 @@ const Explore = () => {
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const debounceTimeoutRef = useRef(null);
   
   const categories = [
     "All",
@@ -48,31 +50,47 @@ const Explore = () => {
     "English",
   ];
 
+  const fetchStories = useCallback(async () => {
+    try {
+      if (isInitialMount.current) {
+        setLoading(true);
+      }
+      const res = await storiesAPI.getAll(
+        currentPage,
+        9,
+        debouncedSearchQuery,
+        selectedCategory,
+        selectedLanguage
+      );
+      setStories(res.data.stories);
+      setTotalPages(res.data.totalPages);
+      setTotalItems(res.data.totalItems);
+    } catch (err) {
+      console.error("Failed to fetch stories", err);
+    } finally {
+      setLoading(false);
+      isInitialMount.current = false;
+    }
+  }, [currentPage, debouncedSearchQuery, selectedCategory, selectedLanguage]);
+
   useEffect(() => {
-    const fetchStories = async () => {
-      try {
-        if (isInitialMount.current) {
-          setLoading(true);
-        }
-        const res = await storiesAPI.getAll(
-          currentPage,
-          9,
-          searchQuery,
-          selectedCategory,
-          selectedLanguage
-        );
-        setStories(res.data.stories);
-        setTotalPages(res.data.totalPages);
-        setTotalItems(res.data.totalItems);
-      } catch (err) {
-        console.error("Failed to fetch stories", err);
-      } finally {
-        setLoading(false);
-        isInitialMount.current = false;
+    fetchStories();
+  }, [fetchStories]);
+
+  useEffect(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    debounceTimeoutRef.current = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+      setCurrentPage(1);
+    }, 400);
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
       }
     };
-    fetchStories();
-  }, [currentPage, searchQuery, selectedCategory, selectedLanguage]);
+  }, [searchQuery]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -81,7 +99,6 @@ const Explore = () => {
 
   const handleSearchChange = (value) => {
     setSearchQuery(value);
-    setCurrentPage(1);
   };
 
   const handleCategoryChange = (category) => {
@@ -144,7 +161,7 @@ const Explore = () => {
           <div className="relative max-w-2xl">
             <Input
               icon={Search}
-              placeholder="Search stories by title, description, or keywords..."
+              placeholder="Search by title"
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
             />

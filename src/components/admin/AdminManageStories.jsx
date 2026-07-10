@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen,
@@ -19,23 +19,40 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const storiesPerPage = 10;
+  const debounceTimeoutRef = useRef(null);
 
-  const fetchStories = async () => {
+  const fetchStories = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await adminAPI.getAllStories(currentPage, storiesPerPage, searchQuery);
+      const res = await adminAPI.getAllStories(currentPage, storiesPerPage, debouncedSearchQuery);
       setStories(res.data.stories);
     } catch (err) {
       console.error("Failed to fetch stories", err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, storiesPerPage, debouncedSearchQuery]);
 
   useEffect(() => {
     fetchStories();
-  }, [currentPage, searchQuery]);
+  }, [fetchStories]);
+
+  useEffect(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    debounceTimeoutRef.current = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+      setCurrentPage(1);
+    }, 400);
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
 
   const handleDelete = async (storyId) => {
     try {
@@ -49,7 +66,6 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1);
   };
 
   const totalPages = Math.ceil(stories.length / storiesPerPage);

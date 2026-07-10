@@ -468,21 +468,79 @@ export const getAllStoriesAdmin = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    const search = req.query.search || "";
+    const search = (req.query.search || "").trim();
 
-    const query = {};
+    let stories;
+    let totalItems;
+
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: "i" } },
-      ];
-    }
+      // Search with ranking
+      const searchRegex = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      const startsWithRegex = new RegExp(`^${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
 
-    const totalItems = await StoryModel.countDocuments(query);
-    const stories = await StoryModel.find(query)
-      .populate("author", "fullName email")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      // Build search query (title, description, tags - NOT content)
+      const searchQuery = {
+        $or: [
+          { title: { $regex: searchRegex } },
+          { description: { $regex: searchRegex } },
+          { tags: { $regex: searchRegex } },
+        ],
+      };
+
+      // Get all matching stories for ranking
+      const allMatchingStories = await StoryModel.find(searchQuery)
+        .populate("author", "fullName email");
+
+      // Calculate relevance scores
+      const scoredStories = allMatchingStories.map(story => {
+        let score = 0;
+        const title = (story.title || "").toLowerCase();
+        const description = (story.description || "").toLowerCase();
+        const tags = (story.tags || "").toLowerCase();
+        const searchLower = search.toLowerCase();
+
+        // Priority 1: Title starts with search (highest)
+        if (startsWithRegex.test(story.title || "")) {
+          score += 100;
+        }
+        // Priority 2: Title contains search
+        else if (title.includes(searchLower)) {
+          score += 50;
+        }
+        // Priority 3: Description contains search
+        if (description.includes(searchLower)) {
+          score += 25;
+        }
+        // Priority 4: Tags contain search
+        if (tags.includes(searchLower)) {
+          score += 10;
+        }
+
+        return { ...story.toObject(), _searchScore: score };
+      });
+
+      // Sort by score (descending), then by createdAt (descending)
+      scoredStories.sort((a, b) => {
+        if (b._searchScore !== a._searchScore) {
+          return b._searchScore - a._searchScore;
+        }
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      // Remove the score field before returning
+      const sortedStories = scoredStories.map(({ _searchScore, ...story }) => story);
+
+      totalItems = sortedStories.length;
+      stories = sortedStories.slice(skip, skip + limit);
+    } else {
+      // No search - return all stories
+      totalItems = await StoryModel.countDocuments({});
+      stories = await StoryModel.find({})
+        .populate("author", "fullName email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+    }
 
     const totalPages = Math.ceil(totalItems / limit);
 
