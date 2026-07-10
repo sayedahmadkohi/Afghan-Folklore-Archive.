@@ -17,6 +17,8 @@ const AdminManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const usersPerPage = 10;
@@ -26,6 +28,8 @@ const AdminManageUsers = () => {
       setIsLoading(true);
       const res = await adminAPI.getAllUsers(currentPage, usersPerPage, searchQuery);
       setUsers(res.data.users);
+      setTotalPages(res.data.totalPages);
+      setTotalItems(res.data.totalItems);
     } catch (err) {
       console.error("Failed to fetch users", err);
     } finally {
@@ -42,10 +46,8 @@ const AdminManageUsers = () => {
     setCurrentPage(1);
   };
 
-  const totalPages = Math.ceil(users.length / usersPerPage);
   const startIndex = (currentPage - 1) * usersPerPage;
-  const endIndex = startIndex + usersPerPage;
-  const currentUsers = users.slice(startIndex, endIndex);
+  const endIndex = startIndex + users.length;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -138,23 +140,23 @@ const AdminManageUsers = () => {
                         {startIndex + index + 1}.
                       </span>
                       <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="text-lg font-bold text-text-primary">
+                        <div className="flex items-center gap-2 md:gap-3">
+                          <h3 className="text-base md:text-lg font-bold text-text-primary">
                             {user.fullName}
                           </h3>
                           {user.role === "admin" && (
-                            <div className="flex items-center space-x-1 px-2 py-1 rounded-full bg-primary-accent/10 text-primary-accent text-xs font-medium">
-                              <Shield className="w-3 h-3" />
+                            <div className="flex items-center space-x-1 px-2 py-0.5 md:py-1 rounded-full bg-primary-accent/10 text-primary-accent text-[10px] md:text-xs font-medium">
+                              <Shield className="w-2.5 md:w-3 h-2.5 md:h-3" />
                               <span>Admin</span>
                             </div>
                           )}
                         </div>
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary mt-2">
-                          <span>{user.email}</span>
-                          <span>•</span>
+                        <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-text-secondary mt-2">
+                          <span className="break-all">{user.email}</span>
+                          <span className="hidden sm:inline">•</span>
                           <span className="capitalize">{user.role || "user"}</span>
-                          <span>•</span>
-                          <span>
+                          <span className="hidden sm:inline">•</span>
+                          <span className="hidden sm:inline">
                             {new Date(user.createdAt).toLocaleDateString("en-US", {
                               year: "numeric",
                               month: "short",
@@ -171,9 +173,9 @@ const AdminManageUsers = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setDeleteConfirmId(user._id)}
-                        className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors text-sm"
+                        className="flex items-center space-x-2 px-3 py-2 md:px-4 md:py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors text-xs md:text-sm"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 md:w-4 h-3.5 md:h-4" />
                         <span>Delete</span>
                       </motion.button>
                     )}
@@ -225,7 +227,7 @@ const AdminManageUsers = () => {
               className="flex items-center justify-between pt-4 border-t border-border"
             >
               <p className="text-text-secondary text-sm">
-                Showing {startIndex + 1} to {Math.min(endIndex, users.length)} of {users.length} users
+                Showing {startIndex + 1} to {endIndex} of {totalItems} users
               </p>
               <div className="flex items-center space-x-2">
                 <motion.button

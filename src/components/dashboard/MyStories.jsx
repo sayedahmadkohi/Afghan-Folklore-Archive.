@@ -110,18 +110,18 @@ const MyStories = ({ onEdit }) => {
               >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex-1 space-y-2">
-                  <h3 className="text-lg font-bold text-text-primary">
+                  <h3 className="text-base md:text-lg font-bold text-text-primary">
                     {startIndex + index + 1}. {story.title}
                   </h3>
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
-                    <span className="px-3 py-1 rounded-full bg-primary-accent/10 text-primary-accent text-xs font-medium">
+                  <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-text-secondary">
+                    <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-primary-accent/10 text-primary-accent text-[10px] md:text-xs font-medium">
                       {story.category}
                     </span>
-                    <div className="flex items-center space-x-1.5">
-                      <MapPin className="w-3.5 h-3.5" />
+                    <div className="flex items-center space-x-1 md:space-x-1.5">
+                      <MapPin className="w-3 md:w-3.5 h-3 md:h-3.5" />
                       <span>{story.region}</span>
                     </div>
-                    <span className="text-xs">
+                    <span className="hidden sm:inline text-xs">
                       {new Date(story.createdAt).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "short",
@@ -135,18 +135,18 @@ const MyStories = ({ onEdit }) => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => onEdit(story._id)}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-sm"
+                    className="flex items-center space-x-2 px-3 py-2 md:px-4 md:py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-primary-accent hover:border-primary-accent transition-colors text-xs md:text-sm"
                   >
-                    <Edit3 className="w-4 h-4" />
+                    <Edit3 className="w-3.5 md:w-4 h-3.5 md:h-4" />
                     <span>Edit</span>
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setDeleteConfirmId(story._id)}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors text-sm"
+                    className="flex items-center space-x-2 px-3 py-2 md:px-4 md:py-2 rounded-lg bg-card-background border border-border text-text-secondary hover:text-red-400 hover:border-red-400 transition-colors text-xs md:text-sm"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 md:w-4 h-3.5 md:h-4" />
                     <span>Delete</span>
                   </motion.button>
                 </div>

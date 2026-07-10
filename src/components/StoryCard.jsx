@@ -32,10 +32,10 @@ const StoryCard = ({ story, compact = false }) => {
       transition={{ duration: 0.3 }}
       className="group"
     >
-      <Link to={`/story/${storyId}`} className="block">
-        <div className={`glass rounded-2xl overflow-hidden hover:border-primary-accent/30 transition-all duration-300 ${compact ? 'rounded-xl h-full flex flex-col' : ''}`}>
+      <Link to={`/story/${storyId}`} className="block h-full">
+        <div className={`glass rounded-2xl overflow-hidden hover:border-primary-accent/30 transition-all duration-300 h-full flex flex-col ${compact ? 'rounded-xl' : ''}`}>
           {/* Image */}
-          <div className={`relative overflow-hidden ${compact ? 'h-28' : 'h-48 md:h-64'}`}>
+          <div className={`relative overflow-hidden flex-shrink-0 ${compact ? 'h-28' : 'h-48 md:h-64'}`}>
             <img
               src={image}
               alt={story.title}
@@ -52,17 +52,17 @@ const StoryCard = ({ story, compact = false }) => {
           </div>
 
           {/* Content */}
-          <div className={`flex flex-col ${compact ? 'p-3 flex-1' : 'p-5 md:p-6 space-y-4'}`} dir={textDirection}>
-            <h3 className={`font-bold text-text-primary group-hover:text-primary-accent transition-colors line-clamp-2 ${compact ? 'text-sm' : 'text-xl md:text-2xl'}`}>
+          <div className={`flex flex-col flex-1 ${compact ? 'p-3' : 'p-5 md:p-6 space-y-4'}`} dir={textDirection}>
+            <h3 className={`font-bold text-text-primary group-hover:text-primary-accent transition-colors line-clamp-2 ${compact ? 'text-sm h-10' : 'text-xl md:text-2xl h-16 md:h-20'}`}>
               {story.title}
             </h3>
 
-            <p className={`text-text-secondary leading-relaxed ${compact ? 'text-[10px] line-clamp-2' : 'text-sm line-clamp-3 min-h-[4.5em]'}`}>
+            <p className={`text-text-secondary leading-relaxed ${compact ? 'text-[10px] line-clamp-2 h-8' : 'text-sm line-clamp-3 h-[4.5em]'}`}>
               {excerpt}
             </p>
 
             {/* Metadata */}
-            <div dir="ltr" className={`flex flex-wrap items-center gap-2 text-text-secondary ${compact ? 'text-[10px] mt-auto' : 'text-xs gap-3'}`}>
+            <div dir="ltr" className={`flex flex-wrap items-center gap-2 text-text-secondary mt-auto ${compact ? 'text-[10px]' : 'text-xs gap-3'}`}>
               <div className="flex items-center gap-2">
                 <MapPin className={compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
                 <span>{story.region}</span>
