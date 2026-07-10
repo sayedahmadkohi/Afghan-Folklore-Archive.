@@ -19,6 +19,7 @@ const mapUser = (userData) => ({
   acceptedRules: userData.acceptedRules,
   isEmailVerified: userData.isEmailVerified,
   savedStories: userData.savedStories || [],
+  role: userData.role || "user",
 });
 
 const setSession = (token, userData, setUser, setIsAuthenticated) => {

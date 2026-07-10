@@ -532,3 +532,30 @@ export const getAllUsersAdmin = async (req, res, next) => {
     next(error);
   }
 };
+
+// DELETE /api/admin/users/:userId
+export const deleteUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    // Prevent deleting the currently logged-in admin
+    if (userId === req.user._id.toString()) {
+      return res.status(400).json({ message: "Cannot delete your own account" });
+    }
+
+    const userToDelete = await User.findById(userId);
+    if (!userToDelete) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete all stories by this user
+    await StoryModel.deleteMany({ author: userId });
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};

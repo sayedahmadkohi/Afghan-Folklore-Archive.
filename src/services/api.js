@@ -63,6 +63,16 @@ export const authAPI = {
   updateProfile: (data) => api.put("/auth/update-profile", data),
 };
 
+// Admin API
+export const adminAPI = {
+  getStats: () => api.get("/admin/stats"),
+  getAllStories: (page = 1, limit = 10, search = "") =>
+    api.get("/admin/stories", { params: { page, limit, search } }),
+  getAllUsers: (page = 1, limit = 10, search = "") =>
+    api.get("/admin/users", { params: { page, limit, search } }),
+  deleteUser: (userId) => api.delete(`/admin/users/${userId}`),
+};
+
 // Stories API
 export const storiesAPI = {
   getAll: (page = 1, limit = 9, search = "", category = "", language = "") =>

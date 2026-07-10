@@ -128,8 +128,8 @@ export const updateStory = async (req, res, next) => {
       return res.status(404).json({ message: "Story not found" });
     }
 
-    // Check ownership
-    if (story.author.toString() !== req.user._id.toString()) {
+    // Check ownership or admin role
+    if (story.author.toString() !== req.user._id.toString() && req.user.role !== "admin") {
       return res
         .status(403)
         .json({ message: "Not authorized to edit this story" });
@@ -177,8 +177,8 @@ export const deleteStory = async (req, res, next) => {
       return res.status(404).json({ message: "Story not found" });
     }
 
-    // Check ownership
-    if (story.author.toString() !== req.user._id.toString()) {
+    // Check ownership or admin role
+    if (story.author.toString() !== req.user._id.toString() && req.user.role !== "admin") {
       return res
         .status(403)
         .json({ message: "Not authorized to delete this story" });
