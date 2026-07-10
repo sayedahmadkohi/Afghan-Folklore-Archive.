@@ -87,11 +87,11 @@ const AdminDashboard = ({ onEdit }) => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {/* Header - Hidden on mobile, shown on desktop */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-2"
+        className="space-y-2 hidden lg:block"
       >
         <h1 className="text-3xl font-bold text-text-primary">Administrator Dashboard</h1>
         <p className="text-text-secondary">Overview of platform statistics and activity</p>

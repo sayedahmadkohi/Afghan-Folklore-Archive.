@@ -64,32 +64,57 @@ const AdminDashboardLayout = () => {
     }
   };
 
+  const getSectionTitle = () => {
+    switch (activeSection) {
+      case "dashboard":
+        return { title: "Administrator Dashboard", description: "Overview of platform statistics and activity" };
+      case "manage-stories":
+        return { title: "Manage Stories", description: "View and manage all stories in the system" };
+      case "manage-users":
+        return { title: "Manage Users", description: "View all registered users in the system" };
+      case "bookmarks":
+        return { title: "Bookmarks", description: "Your saved stories" };
+      case "profile":
+        return { title: "Profile", description: "Manage your account settings" };
+      default:
+        return { title: "Administrator Dashboard", description: "Overview of platform statistics and activity" };
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Mobile Menu Button */}
-      <div className="lg:hidden fixed top-20 left-4 z-40">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-3 rounded-xl bg-card-background border border-border shadow-lg"
-        >
-          {isMobileMenuOpen ? (
-            <X className="w-6 h-6 text-text-primary" />
-          ) : (
-            <Menu className="w-6 h-6 text-text-primary" />
-          )}
-        </motion.button>
+      {/* Dashboard Header */}
+      <div className="lg:hidden bg-card-background/50 backdrop-blur-xl border-b border-border p-4 sticky top-20 z-40">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-lg bg-background border border-border"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5 text-text-primary" />
+              ) : (
+                <Menu className="w-5 h-5 text-text-primary" />
+              )}
+            </motion.button>
+            <div>
+              <h1 className="text-lg font-bold text-text-primary">{getSectionTitle().title}</h1>
+              <p className="text-xs text-text-secondary">{getSectionTitle().description}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="flex">
         {/* Sidebar */}
         <aside
           className={`
-            fixed lg:sticky top-20 lg:top-20 right-0 h-[calc(100vh-5rem)] lg:h-[calc(100vh-5rem)]
-            w-72 bg-card-background/50 backdrop-blur-xl border-l border-border
+            fixed lg:sticky top-20 lg:top-20 left-0 lg:right-0 h-[calc(100vh-5rem)] lg:h-[calc(100vh-5rem)]
+            w-72 bg-card-background/50 backdrop-blur-xl border-r lg:border-l border-border
             transform transition-transform duration-300 ease-in-out z-30
-            ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
+            ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
           `}
         >
           <div className="h-full flex flex-col p-6 space-y-6">

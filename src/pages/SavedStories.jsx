@@ -49,11 +49,11 @@ const SavedStories = () => {
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
+        {/* Header - Hidden on mobile when in admin dashboard, shown on desktop */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
+          className="space-y-4 hidden lg:block"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
             Saved Stories
