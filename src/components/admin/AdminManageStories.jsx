@@ -18,6 +18,8 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const storiesPerPage = 10;
@@ -28,6 +30,8 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
       setIsLoading(true);
       const res = await adminAPI.getAllStories(currentPage, storiesPerPage, debouncedSearchQuery);
       setStories(res.data.stories);
+      setTotalPages(res.data.totalPages);
+      setTotalItems(res.data.totalItems);
     } catch (err) {
       console.error("Failed to fetch stories", err);
     } finally {
@@ -68,10 +72,8 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
     setSearchQuery(e.target.value);
   };
 
-  const totalPages = Math.ceil(stories.length / storiesPerPage);
   const startIndex = (currentPage - 1) * storiesPerPage;
-  const endIndex = startIndex + storiesPerPage;
-  const currentStories = stories.slice(startIndex, endIndex);
+  const endIndex = startIndex + stories.length;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -253,7 +255,7 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
               className="flex items-center justify-between pt-4 border-t border-border"
             >
               <p className="text-text-secondary text-sm">
-                Showing {startIndex + 1} to {Math.min(endIndex, stories.length)} of {stories.length} stories
+                Showing {startIndex + 1} to {endIndex} of {totalItems} stories
               </p>
               <div className="flex items-center space-x-2">
                 <motion.button
