@@ -469,9 +469,16 @@ export const getAllStoriesAdmin = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     const search = (req.query.search || "").trim();
+    const status = req.query.status || "";
 
     let stories;
     let totalItems;
+
+    // Build base query with status filter
+    const baseQuery = {};
+    if (status && status !== "All") {
+      baseQuery.status = status;
+    }
 
     if (search) {
       // Search with ranking
@@ -480,6 +487,7 @@ export const getAllStoriesAdmin = async (req, res, next) => {
 
       // Build search query (title, description, tags - NOT content)
       const searchQuery = {
+        ...baseQuery,
         $or: [
           { title: { $regex: searchRegex } },
           { description: { $regex: searchRegex } },
@@ -533,9 +541,9 @@ export const getAllStoriesAdmin = async (req, res, next) => {
       totalItems = sortedStories.length;
       stories = sortedStories.slice(skip, skip + limit);
     } else {
-      // No search - return all stories
-      totalItems = await StoryModel.countDocuments({});
-      stories = await StoryModel.find({})
+      // No search - return stories with status filter
+      totalItems = await StoryModel.countDocuments(baseQuery);
+      stories = await StoryModel.find(baseQuery)
         .populate("author", "fullName email")
         .sort({ createdAt: -1 })
         .skip(skip)

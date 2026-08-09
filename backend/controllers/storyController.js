@@ -213,6 +213,9 @@ export const updateStory = async (req, res, next) => {
     story.readingTime =
       readingTime !== undefined ? readingTime : story.readingTime;
 
+    // Any story edit requires review again - set status to pending
+    story.status = "pending";
+
     if (req.file) {
       story.image = `/uploads/stories/${req.file.filename}`;
     }

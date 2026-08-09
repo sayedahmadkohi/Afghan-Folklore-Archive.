@@ -122,6 +122,11 @@ const MyStories = ({ onEdit }) => {
                         Pending Review
                       </span>
                     )}
+                    {story.status === "rejected" && (
+                      <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-red-500/10 text-red-400 text-[10px] md:text-xs font-medium">
+                        Rejected
+                      </span>
+                    )}
                     <div className="flex items-center space-x-1 md:space-x-1.5">
                       <MapPin className="w-3 md:w-3.5 h-3 md:h-3.5" />
                       <span>{story.region}</span>
@@ -134,6 +139,11 @@ const MyStories = ({ onEdit }) => {
                       })}
                     </span>
                   </div>
+                  {story.status === "rejected" && (
+                    <p className="text-xs text-red-400 mt-2">
+                      Edit and resubmit this story for another review.
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center space-x-2">
                   <motion.button

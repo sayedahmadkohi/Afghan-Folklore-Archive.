@@ -66,8 +66,8 @@ export const authAPI = {
 // Admin API
 export const adminAPI = {
   getStats: () => api.get("/admin/stats"),
-  getAllStories: (page = 1, limit = 10, search = "") =>
-    api.get("/admin/stories", { params: { page, limit, search } }),
+  getAllStories: (page = 1, limit = 10, search = "", status = "") =>
+    api.get("/admin/stories", { params: { page, limit, search, status } }),
   getAllUsers: (page = 1, limit = 10, search = "") =>
     api.get("/admin/users", { params: { page, limit, search } }),
   deleteUser: (userId) => api.delete(`/admin/users/${userId}`),

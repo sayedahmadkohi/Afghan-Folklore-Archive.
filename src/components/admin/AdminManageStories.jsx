@@ -9,6 +9,8 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
+  Check,
+  X,
 } from "lucide-react";
 import { adminAPI, storiesAPI } from "../../services/api";
 import AddStory from "../../pages/AddStory";
@@ -22,13 +24,16 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
   const [totalItems, setTotalItems] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
   const storiesPerPage = 10;
   const debounceTimeoutRef = useRef(null);
 
   const fetchStories = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await adminAPI.getAllStories(currentPage, storiesPerPage, debouncedSearchQuery);
+      // Convert "All" to empty string for backend, keep other values as-is
+      const statusParam = statusFilter === "All" ? "" : statusFilter.toLowerCase();
+      const res = await adminAPI.getAllStories(currentPage, storiesPerPage, debouncedSearchQuery, statusParam);
       setStories(res.data.stories);
       setTotalPages(res.data.totalPages);
       setTotalItems(res.data.totalItems);
@@ -37,7 +42,7 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, storiesPerPage, debouncedSearchQuery]);
+  }, [currentPage, storiesPerPage, debouncedSearchQuery, statusFilter]);
 
   useEffect(() => {
     fetchStories();
@@ -66,6 +71,29 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
     } catch (err) {
       console.error("Failed to delete story", err);
     }
+  };
+
+  const handleApprove = async (storyId) => {
+    try {
+      await storiesAPI.approve(storyId);
+      fetchStories();
+    } catch (err) {
+      console.error("Failed to approve story", err);
+    }
+  };
+
+  const handleReject = async (storyId) => {
+    try {
+      await storiesAPI.reject(storyId);
+      fetchStories();
+    } catch (err) {
+      console.error("Failed to reject story", err);
+    }
+  };
+
+  const handleStatusFilterChange = (status) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
   };
 
   const handleSearch = (e) => {
@@ -130,6 +158,28 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
         </div>
       </motion.div>
 
+      {/* Status Filter */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="flex flex-wrap gap-2"
+      >
+        {["All", "Pending", "Approved", "Rejected"].map((status) => (
+          <button
+            key={status}
+            onClick={() => handleStatusFilterChange(status)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              statusFilter === status
+                ? "bg-primary-accent text-background"
+                : "bg-card-background border border-border text-text-secondary hover:text-text-primary hover:border-primary-accent"
+            }`}
+          >
+            {status}
+          </button>
+        ))}
+      </motion.div>
+
       {/* Stories List */}
       {stories.length === 0 ? (
         <motion.div
@@ -170,6 +220,14 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
                           <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-primary-accent/10 text-primary-accent text-[10px] md:text-xs font-medium">
                             {story.category}
                           </span>
+                          <span className={`px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[10px] md:text-xs font-medium ${
+                            story.status === "pending" ? "bg-green-500/10 text-green-400" :
+                            story.status === "approved" ? "bg-blue-500/10 text-blue-400" :
+                            story.status === "rejected" ? "bg-red-500/10 text-red-400" :
+                            "bg-gray-500/10 text-gray-400"
+                          }`}>
+                            {story.status || "Unknown"}
+                          </span>
                           <div className="flex items-center space-x-1 md:space-x-1.5">
                             <MapPin className="w-3 md:w-3.5 h-3 md:h-3.5" />
                             <span>{story.region}</span>
@@ -189,6 +247,28 @@ const AdminManageStories = ({ onEdit, editingStoryId, onClearEdit }) => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
+                    {story.status === "pending" && (
+                      <>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleApprove(story._id)}
+                          className="flex items-center space-x-2 px-3 py-2 md:px-4 md:py-2 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 transition-colors text-xs md:text-sm"
+                        >
+                          <Check className="w-3.5 md:w-4 h-3.5 md:h-4" />
+                          <span>Accept</span>
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleReject(story._id)}
+                          className="flex items-center space-x-2 px-3 py-2 md:px-4 md:py-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors text-xs md:text-sm"
+                        >
+                          <X className="w-3.5 md:w-4 h-3.5 md:h-4" />
+                          <span>Reject</span>
+                        </motion.button>
+                      </>
+                    )}
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

@@ -284,7 +284,7 @@ const AddStory = ({ editingStoryId: propEditingId, onClearEdit }) => {
 
       if (editingId) {
         await storiesAPI.update(editingId, data);
-        setSuccess("Story updated successfully!");
+        setSuccess("Story updated successfully! It is now pending review.");
         setEditingId(null);
       } else {
         await storiesAPI.create(data);
