@@ -8,6 +8,8 @@ import {
   Loader2,
   Edit3,
   Trash2,
+  Check,
+  X,
 } from "lucide-react";
 import { adminAPI, storiesAPI } from "../../services/api";
 
@@ -74,6 +76,26 @@ const AdminDashboard = ({ onEdit }) => {
       setLatestStories(res.data.stories);
     } catch (err) {
       console.error("Failed to delete story", err);
+    }
+  };
+
+  const handleApprove = async (storyId) => {
+    try {
+      await storiesAPI.approve(storyId);
+      const res = await adminAPI.getAllStories(1, 5);
+      setLatestStories(res.data.stories);
+    } catch (err) {
+      console.error("Failed to approve story", err);
+    }
+  };
+
+  const handleReject = async (storyId) => {
+    try {
+      await storiesAPI.reject(storyId);
+      const res = await adminAPI.getAllStories(1, 5);
+      setLatestStories(res.data.stories);
+    } catch (err) {
+      console.error("Failed to reject story", err);
     }
   };
 
@@ -173,6 +195,28 @@ const AdminDashboard = ({ onEdit }) => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
+                    {story.status === "pending" && (
+                      <>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleApprove(story._id)}
+                          className="flex items-center space-x-2 px-3 py-2 md:px-4 md:py-2 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 transition-colors text-xs md:text-sm"
+                        >
+                          <Check className="w-3.5 md:w-4 h-3.5 md:h-4" />
+                          <span>Approve</span>
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleReject(story._id)}
+                          className="flex items-center space-x-2 px-3 py-2 md:px-4 md:py-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors text-xs md:text-sm"
+                        >
+                          <X className="w-3.5 md:w-4 h-3.5 md:h-4" />
+                          <span>Reject</span>
+                        </motion.button>
+                      </>
+                    )}
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

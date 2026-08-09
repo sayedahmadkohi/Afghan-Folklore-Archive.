@@ -90,6 +90,8 @@ export const storiesAPI = {
   delete: (id) => api.delete(`/stories/${id}`),
   toggleLike: (id) => api.post(`/stories/${id}/like`),
   incrementView: (id) => api.post(`/stories/${id}/view`),
+  approve: (id) => api.put(`/stories/${id}/approve`),
+  reject: (id) => api.put(`/stories/${id}/reject`),
 };
 
 export default api;

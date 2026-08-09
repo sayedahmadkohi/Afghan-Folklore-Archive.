@@ -117,6 +117,11 @@ const MyStories = ({ onEdit }) => {
                     <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-primary-accent/10 text-primary-accent text-[10px] md:text-xs font-medium">
                       {story.category}
                     </span>
+                    {story.status === "pending" && (
+                      <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-green-500/10 text-green-400 text-[10px] md:text-xs font-medium">
+                        Pending Review
+                      </span>
+                    )}
                     <div className="flex items-center space-x-1 md:space-x-1.5">
                       <MapPin className="w-3 md:w-3.5 h-3 md:h-3.5" />
                       <span>{story.region}</span>

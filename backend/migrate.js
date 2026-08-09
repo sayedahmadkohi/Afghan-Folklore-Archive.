@@ -41,6 +41,22 @@ const migrate = async () => {
     console.log(`Stories without language field: ${withoutLanguage}`);
     console.log(`Stories with empty language: ${withEmptyLanguage}`);
 
+    // Migrate status field - set existing stories to approved
+    const statusResult = await Story.updateMany(
+      { status: { $exists: false } },
+      { $set: { status: "approved" } },
+    );
+
+    console.log(
+      `Status migration complete: ${statusResult.modifiedCount} stories set to "approved"`,
+    );
+
+    // Verify all stories now have a status field
+    const withoutStatus = await Story.countDocuments({
+      status: { $exists: false },
+    });
+    console.log(`Stories without status field: ${withoutStatus}`);
+
     process.exit(0);
   } catch (error) {
     console.error("Migration error:", error);

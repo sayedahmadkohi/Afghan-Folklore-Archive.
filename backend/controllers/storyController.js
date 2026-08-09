@@ -12,7 +12,7 @@ export const getStories = async (req, res, next) => {
     const language = req.query.language || "";
 
     // Build base query for category and language filters
-    const baseQuery = {};
+    const baseQuery = { status: "approved" };
 
     // Add category filter
     if (category && category !== "All") {
@@ -321,6 +321,42 @@ export const incrementView = async (req, res, next) => {
     global._viewThrottle.set(viewKey, Date.now());
 
     res.json({ views: story.views, incremented: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT /api/stories/:id/approve - Approve a story (admin only)
+export const approveStory = async (req, res, next) => {
+  try {
+    const story = await StoryModel.findById(req.params.id);
+    if (!story) {
+      return res.status(404).json({ message: "Story not found" });
+    }
+
+    story.status = "approved";
+    await story.save();
+    await story.populate("author", "fullName email");
+
+    res.json(story);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT /api/stories/:id/reject - Reject a story (admin only)
+export const rejectStory = async (req, res, next) => {
+  try {
+    const story = await StoryModel.findById(req.params.id);
+    if (!story) {
+      return res.status(404).json({ message: "Story not found" });
+    }
+
+    story.status = "rejected";
+    await story.save();
+    await story.populate("author", "fullName email");
+
+    res.json(story);
   } catch (error) {
     next(error);
   }
